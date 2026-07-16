@@ -40,7 +40,7 @@
 #define RTC_ALARM_MIN	0x03
 #define RTC_ALARM_HOUR	0x05
 
-/* Registers A-D indeces in RTC RAM */
+/* Registers A-D indices in RTC RAM */
 #define RTC_REG_A	0x0A
 #define RTC_REG_B	0x0B
 #define RTC_REG_C	0x0C
@@ -529,7 +529,7 @@ static DEVICE_API(rtc, rtc_mc146818_driver_api) = {
 		IRQ_CONNECT(DT_INST_IRQN(0),					\
 				DT_INST_IRQ(0, priority),			\
 				rtc_mc146818_isr, DEVICE_DT_INST_GET(n),	\
-				DT_INST_IRQ(0, sense));				\
+				DT_INST_IRQ(0, flags));				\
 										\
 		irq_enable(DT_INST_IRQN(0));					\
 										\

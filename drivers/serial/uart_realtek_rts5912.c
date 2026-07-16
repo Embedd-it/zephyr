@@ -18,7 +18,7 @@
 #include <zephyr/pm/pm.h>
 #include <zephyr/pm/policy.h>
 #include <zephyr/pm/device.h>
-#include "zephyr/drivers/gpio/gpio_rts5912.h"
+#include <zephyr/drivers/gpio/gpio_rts5912.h>
 
 LOG_MODULE_REGISTER(uart_rts5912, CONFIG_UART_LOG_LEVEL);
 
@@ -140,7 +140,7 @@ static int rts5912_uart_init(const struct device *dev)
 	uint32_t wf_now = wf_start;
 
 	/*	For RTS5912 UART, if enable UART wake up function, it will
-	 *	change GPIO pin from uart funciton to gpio function before WFI.
+	 *	change GPIO pin from uart function to gpio function before WFI.
 	 *	System need to ensure this register is cleared in every time doing init function.
 	 */
 	while (wf_cycle_count > (wf_now - wf_start)) {

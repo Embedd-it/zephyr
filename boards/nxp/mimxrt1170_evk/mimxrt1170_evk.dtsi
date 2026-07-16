@@ -92,6 +92,9 @@ arduino_i2c: &lpi2c5 {
 	status = "okay";
 	pinctrl-0 = <&pinmux_lpi2c5>;
 	pinctrl-names = "default";
+	scl-gpios = <&gpio12 5 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio12 4 GPIO_ACTIVE_HIGH>;
+	recover-bus-on-init;
 
 	fxos8700: fxos8700@1f {
 		compatible = "nxp,fxos8700";
@@ -136,10 +139,14 @@ arduino_serial: &lpuart2 {
 	pinctrl-names = "default";
 };
 
-&enet_mac {
+&enet {
 	status = "okay";
 	pinctrl-0 = <&pinmux_enet>;
 	pinctrl-names = "default";
+};
+
+&enet_mac {
+	status = "okay";
 	phy-handle = <&phy>;
 	phy-connection-type = "rmii";
 	zephyr,random-mac-address;
@@ -166,10 +173,13 @@ arduino_serial: &lpuart2 {
 	pinctrl-names = "default";
 };
 
-&enet1g_mac {
-	status = "disabled";
+&enet1g {
 	pinctrl-0 = <&pinmux_enet1g>;
 	pinctrl-names = "default";
+};
+
+&enet1g_mac {
+	status = "disabled";
 	phy-handle = <&enet1g_phy>;
 	phy-connection-type = "rgmii";
 	zephyr,random-mac-address;
@@ -269,43 +279,60 @@ arduino_spi: &lpspi1 {
 	rx-clock-source = <1>;
 	reg = <0x400cc000 0x4000>, <0x30000000 DT_SIZE_M(16)>;
 
-	is25wp128: is25wp128@0 {
+	ext_flash_ctrl: flash-controller@0 {
 		compatible = "nxp,imx-flexspi-nor";
 		size = <DT_SIZE_M(16*8)>;
 		reg = <0>;
 		spi-max-frequency = <DT_FREQ_M(104)>;
 		status = "okay";
 		jedec-id = [9d 70 18];
-		erase-block-size = <DT_SIZE_K(4)>;
-		write-block-size = <1>;
 
-		partitions {
-			compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0x0 0x30000000 DT_SIZE_M(16)>;
+
+		is25wp128: flash@0 {
+			compatible = "soc-nv-flash";
+			reg = <0x0 DT_SIZE_M(16)>;
+			erase-block-size = <DT_SIZE_K(4)>;
+			write-block-size = <1>;
+
 			#address-cells = <1>;
 			#size-cells = <1>;
+			ranges;
 
-			/*
-			 * Partition sizes must be aligned
-			 * to the flash memory sector size of 4KB.
-			 */
-			boot_partition: partition@0 {
-				label = "mcuboot";
-				reg = <0x00000000 DT_SIZE_K(128)>;
-			};
+			partitions {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				ranges;
 
-			slot0_partition: partition@20000 {
-				label = "image-0";
-				reg = <0x00020000 DT_SIZE_M(7)>;
-			};
+				/*
+				 * Partition sizes must be aligned
+				 * to the flash memory sector size of 4KB.
+				 */
+				boot_partition: partition@0 {
+					compatible = "zephyr,mapped-partition";
+					label = "mcuboot";
+					reg = <0x00000000 DT_SIZE_K(128)>;
+				};
 
-			slot1_partition: partition@720000 {
-				label = "image-1";
-				reg = <0x00720000 DT_SIZE_M(7)>;
-			};
+				slot0_partition: partition@20000 {
+					compatible = "zephyr,mapped-partition";
+					label = "image-0";
+					reg = <0x00020000 DT_SIZE_M(7)>;
+				};
 
-			storage_partition: partition@e20000 {
-				label = "storage";
-				reg = <0x00e20000 (DT_SIZE_M(2) - DT_SIZE_K(128))>;
+				slot1_partition: partition@720000 {
+					compatible = "zephyr,mapped-partition";
+					label = "image-1";
+					reg = <0x00720000 DT_SIZE_M(7)>;
+				};
+
+				storage_partition: partition@e20000 {
+					compatible = "zephyr,mapped-partition";
+					label = "storage";
+					reg = <0x00e20000 (DT_SIZE_M(2) - DT_SIZE_K(128))>;
+				};
 			};
 		};
 	};
@@ -313,4 +340,10 @@ arduino_spi: &lpspi1 {
 
 &pxp {
 	status = "okay";
+};
+
+&micfil {
+	status = "okay";
+	pinctrl-0 = <&pinmux_micfil>;
+	pinctrl-names = "default";
 };

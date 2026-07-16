@@ -52,7 +52,7 @@ struct _thread_base {
 	};
 
 	/* wait queue on which the thread is pended (needed only for
-	 * trees, not dumb lists)
+	 * trees, not simple lists)
 	 */
 	_wait_q_t *pended_on;
 
@@ -111,7 +111,7 @@ struct _thread_base {
 
 #ifdef CONFIG_SCHED_CPU_MASK
 	/* "May run on" bits for each CPU */
-	uint16_t cpu_mask;
+	uint32_t cpu_mask;
 #endif /* CONFIG_SCHED_CPU_MASK */
 
 	/* data returned by APIs */

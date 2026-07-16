@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2025 Infineon Technologies AG,
- * or an affiliate of Infineon Technologies AG.
+ * SPDX-FileCopyrightText: <text>Copyright (c) 2026 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG. All rights reserved.</text>
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -98,7 +98,7 @@ static int trigger_connect_setup(uint32_t channel, struct dma_config *cfg)
 		cfg->dma_slot = SW_TRIG_ASSIGN;
 	}
 
-	/* Assign peripheral or SW trigger to respective DMA request assginments */
+	/* Assign peripheral or SW trigger to respective DMA request assignments */
 	trig_status = Cy_TrigMux_Connect(cfg->dma_slot, TRIG0_OUT_CPUSS_DMAC_TR_IN0 + channel);
 	if (trig_status != CY_TRIGMUX_SUCCESS) {
 		return -EIO;

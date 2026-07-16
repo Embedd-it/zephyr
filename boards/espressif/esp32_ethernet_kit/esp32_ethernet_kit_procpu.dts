@@ -84,16 +84,19 @@
 &mdio {
 	pinctrl-0 = <&mdio_default>;
 	pinctrl-names = "default";
+	status = "okay";
 
 	phy: ethernet-phy@1 {
 		compatible = "ethernet-phy";
-		status = "disabled";
 		reg = <1>;
 	};
 };
 
 &eth {
+	status = "okay";
 	phy-handle = <&phy>;
+	pinctrl-0 = <&rmii_default>;
+	pinctrl-names = "default";
 };
 
 &esp32_bt_hci {

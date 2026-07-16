@@ -18,6 +18,11 @@
 
 LOG_MODULE_DECLARE(LSM6DSV16X, CONFIG_SENSOR_LOG_LEVEL);
 
+static const gpio_flags_t gpio_int_cfg[2] = {
+			GPIO_INT_EDGE_TO_ACTIVE,
+			GPIO_INT_LEVEL_ACTIVE,
+			};
+
 /**
  * lsm6dsv16x_enable_xl_int - XL enable selected int pin to generate interrupt
  */
@@ -273,7 +278,7 @@ static void lsm6dsv16x_handle_interrupt(const struct device *dev)
 
 	if (!ON_I3C_BUS(cfg) || (I3C_INT_PIN(cfg))) {
 		ret = gpio_pin_interrupt_configure_dt(lsm6dsv16x->drdy_gpio,
-						GPIO_INT_EDGE_TO_ACTIVE);
+						      gpio_int_cfg[cfg->int_mode]);
 		if (ret < 0) {
 			LOG_ERR("%s: Not able to configure pin_int", dev->name);
 		}
@@ -351,7 +356,7 @@ static int lsm6dsv16x_ibi_cb(struct i3c_device_desc *target,
 	 *           FF_IA)
 	 * - MDB[3]: SHUB DRDY (SENS_HUB_ENDOP)
 	 * - MDB[4]: Advanced Function interrupt group
-	 * - MDB[7:5]: 3'b000: Vendor Definied
+	 * - MDB[7:5]: 3'b000: Vendor Defined
 	 *             3'b100: Timing Information
 	 * 2nd byte: FIFO_STATUS1
 	 * 3rd byte: FIFO_STATUS2
@@ -451,7 +456,7 @@ int lsm6dsv16x_init_interrupt(const struct device *dev)
 			}
 
 			ret = gpio_pin_interrupt_configure_dt(lsm6dsv16x->drdy_gpio,
-							      GPIO_INT_EDGE_TO_ACTIVE);
+							      gpio_int_cfg[cfg->int_mode]);
 			if (ret < 0) {
 				LOG_ERR("Could not configure gpio interrupt");
 				return ret;
@@ -487,6 +492,5 @@ int lsm6dsv16x_init_interrupt(const struct device *dev)
 	}
 #endif
 
-	return gpio_pin_interrupt_configure_dt(lsm6dsv16x->drdy_gpio,
-					       GPIO_INT_EDGE_TO_ACTIVE);
+	return gpio_pin_interrupt_configure_dt(lsm6dsv16x->drdy_gpio, gpio_int_cfg[cfg->int_mode]);
 }

@@ -10,11 +10,12 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/sys/byteorder.h>
+#include <zephyr/sys/minmax.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(input_ch9350l, CONFIG_INPUT_LOG_LEVEL);
 
-/* The theorical maximum is 72 */
+/* The theoretical maximum is 72 */
 #define CH9350L_FRAME_SIZE_MAX	72
 #define CH9350L_FRAME_SIZE_MIN	8
 #define CH9350L_WAIT_TIMEOUT_MS	100
@@ -279,7 +280,7 @@ static void ch9350l_input_callback(const struct device *dev_uart, void *user_dat
 	uint8_t frame_size;
 
 	uart_irq_update(dev_uart);
-	if (!uart_irq_rx_ready(dev_uart)) {
+	if (uart_irq_rx_ready(dev_uart) <= 0) {
 		return;
 	}
 

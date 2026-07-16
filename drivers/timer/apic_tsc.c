@@ -9,7 +9,6 @@
 #include <zephyr/arch/x86/cpuid.h>
 #include <zephyr/drivers/timer/system_timer.h>
 #include <zephyr/sys_clock.h>
-#include <zephyr/spinlock.h>
 #include <zephyr/drivers/interrupt_controller/loapic.h>
 #include <zephyr/irq.h>
 
@@ -55,29 +54,15 @@ BUILD_ASSERT((!IS_ENABLED(CONFIG_APIC_TIMER_TSC) &&
 #define CYCLE_DIFF_MAX (~(cycle_diff_t)0)
 
 /*
- * We have two constraints on the maximum number of cycles we can wait for.
- *
- * 1) sys_clock_announce() accepts at most INT32_MAX ticks.
- *
- * 2) The number of cycles between two reports must fit in a cycle_diff_t
- *    variable before converting it to ticks.
- *
- * Then:
- *
- * 3) Pick the smallest between (1) and (2).
- *
- * 4) Take into account some room for the unavoidable IRQ servicing latency.
- *    Let's use 3/4 of the max range.
- *
- * Finally let's add the LSB value to the result so to clear out a bunch of
- * consecutive set bits coming from the original max values to produce a
- * nicer literal for assembly generation.
+ * Maximum number of cycles to wait between two sys_clock_announce() reports:
+ * the elapsed cycle count must fit in a cycle_diff_t before it is divided down
+ * to ticks. Reserve 1/4 of the range as headroom for the unavoidable IRQ
+ * servicing latency so a late report still fits, then add the LSB so the value
+ * clears a run of low set bits for a nicer literal in the generated assembly.
  */
-#define CYCLES_MAX_1	((uint64_t)INT32_MAX * (uint64_t)CYC_PER_TICK)
-#define CYCLES_MAX_2	((uint64_t)CYCLE_DIFF_MAX)
-#define CYCLES_MAX_3	MIN(CYCLES_MAX_1, CYCLES_MAX_2)
-#define CYCLES_MAX_4	(CYCLES_MAX_3 / 2 + CYCLES_MAX_3 / 4)
-#define CYCLES_MAX	(CYCLES_MAX_4 + LSB_GET(CYCLES_MAX_4))
+#define CYCLES_MAX_1	((uint64_t)CYCLE_DIFF_MAX)
+#define CYCLES_MAX_2	(CYCLES_MAX_1 / 2 + CYCLES_MAX_1 / 4)
+#define CYCLES_MAX	(CYCLES_MAX_2 + LSB_GET(CYCLES_MAX_2))
 
 struct apic_timer_lvt {
 	uint8_t vector   : 8;
@@ -87,7 +72,6 @@ struct apic_timer_lvt {
 	uint32_t unused2 : 13;
 };
 
-static struct k_spinlock lock;
 static uint64_t last_cycle;
 static uint64_t last_tick;
 static uint32_t last_elapsed;
@@ -129,7 +113,7 @@ static void isr(const void *arg)
 {
 	ARG_UNUSED(arg);
 
-	k_spinlock_key_t key = k_spin_lock(&lock);
+	k_spinlock_key_t key = sys_clock_lock();
 	uint64_t curr_cycle = rdtsc();
 	uint64_t delta_cycles = curr_cycle - last_cycle;
 	uint32_t delta_ticks = (cycle_diff_t)delta_cycles / CYC_PER_TICK;
@@ -144,28 +128,24 @@ static void isr(const void *arg)
 		set_trigger(next_cycle);
 	}
 
-	k_spin_unlock(&lock, key);
-	sys_clock_announce(delta_ticks);
+	sys_clock_announce_locked(delta_ticks, key);
 }
 
-void sys_clock_set_timeout(int32_t ticks, bool idle)
+void sys_clock_set_timeout(uint32_t ticks, bool idle)
 {
 	ARG_UNUSED(idle);
+
+	__ASSERT(sys_clock_is_locked(), "system clock lock not held");
 
 	if (!IS_ENABLED(CONFIG_TICKLESS_KERNEL)) {
 		return;
 	}
 
-	k_spinlock_key_t key = k_spin_lock(&lock);
 	uint64_t next_cycle;
 
-	if (ticks == K_TICKS_FOREVER) {
+	next_cycle = (last_tick + last_elapsed + ticks) * CYC_PER_TICK;
+	if ((next_cycle - last_cycle) > CYCLES_MAX) {
 		next_cycle = last_cycle + CYCLES_MAX;
-	} else {
-		next_cycle = (last_tick + last_elapsed + ticks) * CYC_PER_TICK;
-		if ((next_cycle - last_cycle) > CYCLES_MAX) {
-			next_cycle = last_cycle + CYCLES_MAX;
-		}
 	}
 
 	/*
@@ -180,23 +160,21 @@ void sys_clock_set_timeout(int32_t ticks, bool idle)
 		next_cycle = UINT64_MAX;
 	}
 	set_trigger(next_cycle);
-
-	k_spin_unlock(&lock, key);
 }
 
 uint32_t sys_clock_elapsed(void)
 {
+	__ASSERT(sys_clock_is_locked(), "system clock lock not held");
+
 	if (!IS_ENABLED(CONFIG_TICKLESS_KERNEL)) {
 		return 0;
 	}
 
-	k_spinlock_key_t key = k_spin_lock(&lock);
 	uint64_t curr_cycle = rdtsc();
 	uint64_t delta_cycles = curr_cycle - last_cycle;
 	uint32_t delta_ticks = (cycle_diff_t)delta_cycles / CYC_PER_TICK;
 
 	last_elapsed = delta_ticks;
-	k_spin_unlock(&lock, key);
 	return delta_ticks;
 }
 

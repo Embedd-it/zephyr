@@ -63,7 +63,7 @@ void dw_dma_isr(const struct device *dev)
 		chan_data = &dev_data->chan[channel];
 
 		if (chan_data->dma_blkcallback) {
-			LOG_DBG("%s: Dispatching block complete callback fro channel %d", dev->name,
+			LOG_DBG("%s: Dispatching block complete callback for channel %d", dev->name,
 				channel);
 
 			/* Ensure the linked list (chan_data->lli) is
@@ -174,8 +174,11 @@ int dw_dma_config(const struct device *dev, uint32_t channel,
 		goto out;
 	}
 
-	/* burst_size = (2 ^ msize) */
-	msize = find_msb_set(cfg->source_burst_length) - 1;
+	/* burst_size = (2 ^ msize); burst length 0 keeps the default msize */
+	if (cfg->source_burst_length != 0) {
+		msize = find_msb_set(cfg->source_burst_length) - 1;
+	}
+
 	LOG_DBG("%s: channel %d m_size=%d", dev->name, channel, msize);
 	__ASSERT_NO_MSG(msize < 5);
 

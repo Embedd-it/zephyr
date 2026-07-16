@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef ZEPHYR_MCTP_I3C_CONTROLLER_H_
-#define ZEPHYR_MCTP_I3C_CONTROLLER_H_
+#ifndef ZEPHYR_INCLUDE_PMCI_MCTP_MCTP_I3C_CONTROLLER_H_
+#define ZEPHYR_INCLUDE_PMCI_MCTP_MCTP_I3C_CONTROLLER_H_
 
 #include <stdint.h>
 #include <zephyr/kernel.h>
@@ -28,13 +28,13 @@ struct mctp_binding_i3c_controller {
 	enum mctp_i3c_endpoint_state *endpoint_states;
 	size_t rx_buf_len;
 	uint8_t *rx_buf;
+	uint8_t tx_storage[MCTP_PKTBUF_SIZE(MCTP_I3C_MAX_PKT_SIZE)] PKTBUF_STORAGE_ALIGN;
 	/** @endcond INTERNAL_HIDDEN */
 };
 
 /** @cond INTERNAL_HIDDEN */
 int mctp_i3c_controller_start(struct mctp_binding *binding);
 int mctp_i3c_controller_tx(struct mctp_binding *binding, struct mctp_pktbuf *pkt);
-void mctp_i3c_controller_ibi_cb(struct i3c_device_desc *target, struct i3c_ibi_payload *payload);
 
 #define MCTP_I3C_ENDPOINT_IDS(_node_id, _name)					\
 	static uint8_t _name##_endpoint_ids[DT_PROP_LEN(_node_id, endpoints)]	\
@@ -56,7 +56,7 @@ void mctp_i3c_controller_ibi_cb(struct i3c_device_desc *target, struct i3c_ibi_p
  *
  * This bus binding make use of IBI interrupt signaling from targets to signal their desire
  * to send a message. The binding specification (dsp0233 v1.0.1) offers alternative modes of
- * operaton such as polling or directly reading but these are not implemented.
+ * operation such as polling or directly reading but these are not implemented.
  *
  * @param _name Symbolic name of the bus binding variable
  * @param _node_id DeviceTree Node containing the configuration of this MCTP binding
@@ -72,6 +72,7 @@ void mctp_i3c_controller_ibi_cb(struct i3c_device_desc *target, struct i3c_ibi_p
 			.start = mctp_i3c_controller_start,					\
 			.tx = mctp_i3c_controller_tx,						\
 			.pkt_size = MCTP_I3C_MAX_PKT_SIZE,					\
+			.tx_storage = _name.tx_storage,						\
 		},										\
 		.num_endpoints = DT_PROP_LEN(_node_id, endpoints),				\
 		.devices = _name##_endpoints,							\
@@ -79,4 +80,4 @@ void mctp_i3c_controller_ibi_cb(struct i3c_device_desc *target, struct i3c_ibi_p
 		.endpoint_i3c_devs = _name##_endpoint_i3c_devs,					\
 	};
 
-#endif /* ZEPHYR_MCTP_I3C_CONTROLLER_H_ */
+#endif /* ZEPHYR_INCLUDE_PMCI_MCTP_MCTP_I3C_CONTROLLER_H_ */

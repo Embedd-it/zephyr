@@ -9,7 +9,7 @@
 
 #include <errno.h>
 #include <zephyr/drivers/spi.h>
-#include <zephyr/drivers/spi/rtio.h>
+#include "spi_rtio.h"
 #include <zephyr/drivers/clock_control.h>
 #include <fsl_spi.h>
 #include <zephyr/logging/log.h>
@@ -922,19 +922,24 @@ static int spi_mcux_init_common(const struct device *dev)
 
 static int spi_mcux_flexcomm_pm_action(const struct device *dev, enum pm_device_action action)
 {
+	int ret;
+
 	switch (action) {
 	case PM_DEVICE_ACTION_RESUME:
 		break;
 	case PM_DEVICE_ACTION_SUSPEND:
 		break;
 	case PM_DEVICE_ACTION_TURN_OFF:
-	    /*This flag is used to prevent configuration optimiztions
+	    /*This flag is used to prevent configuration optimizations
 	     * after exiting PM3 on spi_mcux_configure()
 	     */
 		force_reconfig = true;
 		break;
 	case PM_DEVICE_ACTION_TURN_ON:
-		spi_mcux_init_common(dev);
+		ret = spi_mcux_init_common(dev);
+		if (ret < 0) {
+			return ret;
+		}
 		break;
 	default:
 		return -ENOTSUP;

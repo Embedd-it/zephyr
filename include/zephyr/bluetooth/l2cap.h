@@ -504,8 +504,6 @@ struct bt_l2cap_br_window {
 	struct net_buf_simple_state sdu_state;
 	/** @internal Holds the sending buffer. */
 	struct net_buf *sdu;
-	/** @internal Total length of TX SDU */
-	uint16_t sdu_total_len;
 };
 
 /** @brief BREDR L2CAP Channel structure. */
@@ -538,9 +536,6 @@ struct bt_l2cap_br_chan {
 	sys_slist_t                     _pdu_tx_queue;
 
 #if defined(CONFIG_BT_L2CAP_RET_FC) || defined(__DOXYGEN__)
-	/** @internal Total length of TX SDU */
-	uint16_t                        _sdu_total_len;
-
 	/** @internal Holds the remaining length of current sending buffer */
 	size_t                          _pdu_remaining;
 
@@ -674,6 +669,11 @@ struct bt_l2cap_chan_ops {
 	 *  must set this callback.
 	 *  If the application has not set a callback the L2CAP SDU MTU will be
 	 *  truncated to @ref BT_L2CAP_SDU_RX_MTU.
+	 *
+	 *  @note The stack stores the number of received segments in the first
+	 *        two bytes of the buffer user data. The buffer returned by this
+	 *        callback must have a user data size of at least
+	 *        @c sizeof(uint16_t).
 	 *
 	 *  @param chan The channel requesting a buffer.
 	 *

@@ -15,7 +15,7 @@
 #include <zephyr/drivers/interrupt_controller/intc_vim.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include "zephyr/sys/__assert.h"
+#include <zephyr/sys/__assert.h>
 #include <zephyr/sys/util_macro.h>
 
 LOG_MODULE_REGISTER(vim);
@@ -60,9 +60,9 @@ void z_vim_irq_init(void)
 {
 	uint32_t num_of_irqs = sys_read32(VIM_INFO) & VIM_INFO_INTERRUPTS_MASK;
 
-	__ASSERT(CONFIG_NUM_IRQS == num_of_irqs,
-		 "Number of configured interrupts (%d) doesn't match reported "
-		 "(%" PRIu32 ") interrupts",
+	__ASSERT(CONFIG_NUM_IRQS <= num_of_irqs,
+		 "Zephyr configured with more interrupts (%d) than what hardware supports "
+		 "(%" PRIu32 ")",
 		 CONFIG_NUM_IRQS, num_of_irqs);
 	LOG_DBG("VIM: Number of IRQs = %u\n", num_of_irqs);
 

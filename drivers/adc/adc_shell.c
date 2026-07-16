@@ -45,6 +45,9 @@ LOG_MODULE_REGISTER(adc_shell);
 #define CMD_HELP_GAIN	SHELL_HELP("Configure gain", NULL)
 #define CMD_HELP_PRINT	SHELL_HELP("Print current configuration", NULL)
 
+static const char *cmd_adc_dev_get_help =
+	SHELL_HELP("Select subcommand for ADC property label", NULL);
+
 #define ADC_HDL_LIST_ENTRY(node_id)                                                                \
 	{                                                                                          \
 		.dev = DEVICE_DT_GET(node_id),                                                     \
@@ -81,6 +84,7 @@ static struct adc_hdl {
 	DT_FOREACH_STATUS_OKAY(ite_it51xxx_adc, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ite_it8xxx2_adc, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(lltc_ltc2451, ADC_HDL_LIST_ENTRY)
+	DT_FOREACH_STATUS_OKAY(m5stack_m5pm1_adc, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(maxim_max11102, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(maxim_max11103, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(maxim_max11105, ADC_HDL_LIST_ENTRY)
@@ -126,6 +130,7 @@ static struct adc_hdl {
 	DT_FOREACH_STATUS_OKAY(ti_ads1115, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_ads1119, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_ads114s08, ADC_HDL_LIST_ENTRY)
+	DT_FOREACH_STATUS_OKAY(ti_ads1220, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_ads7052, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_ads7950, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_ads7951, ADC_HDL_LIST_ENTRY)
@@ -149,6 +154,7 @@ static struct adc_hdl {
 	DT_FOREACH_STATUS_OKAY(ti_lmp90098, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_lmp90099, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_lmp90100, ADC_HDL_LIST_ENTRY)
+	DT_FOREACH_STATUS_OKAY(ti_mspm0_adc12, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_tla2021, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_tla2022, ADC_HDL_LIST_ENTRY)
 	DT_FOREACH_STATUS_OKAY(ti_tla2024, ADC_HDL_LIST_ENTRY)
@@ -495,7 +501,7 @@ static void cmd_adc_dev_get(size_t idx, struct shell_static_entry *entry)
 		entry->syntax  = adc_list[idx].dev->name;
 		entry->handler = NULL;
 		entry->subcmd  = &sub_adc_cmds;
-		entry->help    = SHELL_HELP("Select subcommand for ADC property label", NULL);
+		entry->help    = cmd_adc_dev_get_help;
 	} else {
 		entry->syntax  = NULL;
 	}

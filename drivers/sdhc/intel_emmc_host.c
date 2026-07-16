@@ -13,7 +13,6 @@
 #include <zephyr/cache.h>
 #include "intel_emmc_host.h"
 #if DT_ANY_INST_ON_BUS_STATUS_OKAY(pcie)
-BUILD_ASSERT(IS_ENABLED(CONFIG_PCIE), "DT need CONFIG_PCIE");
 #include <zephyr/drivers/pcie/pcie.h>
 #endif
 
@@ -1057,7 +1056,7 @@ static int emmc_set_io(const struct device *dev, struct sdhc_io *ios)
 		LOG_DBG("signal_voltage: %d", ios->signal_voltage);
 		ret = emmc_set_voltage(dev, ios->signal_voltage);
 		if (ret) {
-			LOG_ERR("Set signal volatge failed:%d", ret);
+			LOG_ERR("Set signal voltage failed:%d", ret);
 			return ret;
 		}
 		host_io->signal_voltage = ios->signal_voltage;
@@ -1277,10 +1276,10 @@ static DEVICE_API(sdhc, emmc_api) = {
 	.get_host_props = emmc_get_host_props,
 };
 
-#define EMMC_HOST_IRQ_FLAGS_SENSE0(n) 0
-#define EMMC_HOST_IRQ_FLAGS_SENSE1(n) DT_INST_IRQ(n, sense)
+#define EMMC_HOST_IRQ_FLAGS0(n) 0
+#define EMMC_HOST_IRQ_FLAGS1(n) DT_INST_IRQ(n, flags)
 #define EMMC_HOST_IRQ_FLAGS(n)\
-	_CONCAT(EMMC_HOST_IRQ_FLAGS_SENSE, DT_INST_IRQ_HAS_CELL(n, sense))(n)
+	_CONCAT(EMMC_HOST_IRQ_FLAGS, DT_INST_IRQ_HAS_CELL(n, flags))(n)
 
 /* Not PCI(e) */
 #define EMMC_HOST_IRQ_CONFIG_PCIE0(n)                                                              \
@@ -1298,8 +1297,6 @@ static DEVICE_API(sdhc, emmc_api) = {
 	{                                                                                          \
 		BUILD_ASSERT(DT_INST_IRQN(n) == PCIE_IRQ_DETECT,                                   \
 			     "Only runtime IRQ configuration is supported");                       \
-		BUILD_ASSERT(IS_ENABLED(CONFIG_DYNAMIC_INTERRUPTS),                                \
-			     "eMMC PCI device needs CONFIG_DYNAMIC_INTERRUPTS");                   \
 		const struct emmc_config *const dev_cfg = port->config;                            \
 		unsigned int irq = pcie_alloc_irq(dev_cfg->pcie->bdf);                             \
                                                                                                    \

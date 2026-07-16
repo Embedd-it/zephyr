@@ -238,7 +238,7 @@
 #define DWT_SYS_CTRL_TXDLYS         0x00000004UL
 /* Cancel Suppression of auto-FCS transmission (on the current frame) */
 #define DWT_SYS_CTRL_CANSFCS        0x00000008UL
-/* Transceiver Off. Force Transciever OFF abort TX or RX immediately */
+/* Transceiver Off. Force Transceiver OFF abort TX or RX immediately */
 #define DWT_SYS_CTRL_TRXOFF         0x00000040UL
 /* Wait for Response */
 #define DWT_SYS_CTRL_WAIT4RESP      0x00000080UL
@@ -309,9 +309,9 @@
 #define DWT_SYS_MASK_MGPIOIRQ       0x00400000UL
 /* Mask SLEEP to INIT event */
 #define DWT_SYS_MASK_MSLP2INIT      0x00800000UL
-/* Mask RF PLL Loosing Lock warning event */
+/* Mask RF PLL Losing Lock warning event */
 #define DWT_SYS_MASK_MRFPLLLL       0x01000000UL
-/* Mask Clock PLL Loosing Lock warning event */
+/* Mask Clock PLL Losing Lock warning event */
 #define DWT_SYS_MASK_MCPLLLL        0x02000000UL
 /* Mask Receive SFD timeout event */
 #define DWT_SYS_MASK_MRXSFDTO       0x04000000UL

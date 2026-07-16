@@ -18,7 +18,7 @@
 
 LOG_MODULE_REGISTER(max32_counter_rtc, CONFIG_COUNTER_LOG_LEVEL);
 
-/* Resoultion is 1sec for time of day alarm*/
+/* Resolution is 1sec for time of day alarm*/
 #define MAX32_RTC_COUNTER_FREQ 1
 
 /* 20bits used for time of day alarm */
@@ -72,13 +72,13 @@ static int api_get_value(const struct device *dev, uint32_t *ticks)
 	mxc_rtc_regs_t *regs = cfg->regs;
 	uint32_t sec = 0, subsec = 0;
 
-	/* Read twice incase of glitch */
+	/* Read twice in case of glitch */
 	sec = regs->sec;
 	if (regs->sec != sec) {
 		sec = regs->sec;
 	}
 
-	/* Read twice incase of glitch */
+	/* Read twice in case of glitch */
 	subsec = regs->ssec;
 	if (regs->ssec != subsec) {
 		subsec = regs->ssec;
@@ -138,7 +138,7 @@ static int api_set_alarm(const struct device *dev, uint8_t chan,
 	uint32_t ticks = alarm_cfg->ticks;
 	uint32_t current;
 
-	/* Alarm frequenct is 1Hz so that it seems ticks becomes 0
+	/* Alarm frequency is 1Hz so that it seems ticks becomes 0
 	 * some times, in that case system being blocked.
 	 * Set it to 1 if ticks is 0
 	 */

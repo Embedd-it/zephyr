@@ -131,7 +131,7 @@ static void mcux_flexcomm_pm_unlock_if_idle(const struct device *dev)
 		data->pm_policy_state_lock = false;
 		pm_policy_device_power_lock_put(dev);
 	} else {
-		/* can't block systemn workqueue so keep re-submitting until it's done */
+		/* can't block system workqueue so keep re-submitting until it's done */
 		k_work_submit(&data->pm_lock_work);
 	}
 }
@@ -355,11 +355,6 @@ static int mcux_flexcomm_irq_is_pending(const struct device *dev)
 {
 	return (mcux_flexcomm_irq_tx_ready(dev)
 		|| mcux_flexcomm_irq_rx_pending(dev));
-}
-
-static int mcux_flexcomm_irq_update(const struct device *dev)
-{
-	return 1;
 }
 
 static void mcux_flexcomm_irq_callback_set(const struct device *dev,
@@ -1293,7 +1288,6 @@ static DEVICE_API(uart, mcux_flexcomm_driver_api) = {
 	.irq_err_enable = mcux_flexcomm_irq_err_enable,
 	.irq_err_disable = mcux_flexcomm_irq_err_disable,
 	.irq_is_pending = mcux_flexcomm_irq_is_pending,
-	.irq_update = mcux_flexcomm_irq_update,
 	.irq_callback_set = mcux_flexcomm_irq_callback_set,
 #endif
 #ifdef CONFIG_UART_ASYNC_API

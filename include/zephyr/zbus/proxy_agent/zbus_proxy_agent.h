@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_H_
-#define ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_H_
+#ifndef ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_ZBUS_PROXY_AGENT_H_
+#define ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_ZBUS_PROXY_AGENT_H_
 
 #include <zephyr/kernel.h>
 #include <zephyr/sys/iterable_sections.h>
@@ -80,8 +80,6 @@ struct zbus_proxy_agent_rx_msg {
 struct zbus_proxy_agent {
 	/** The name of the proxy agent */
 	const char *name;
-	/** The type of the proxy agent backend */
-	enum zbus_proxy_agent_backend_type type;
 	/** Backend specific configuration */
 	const void *backend_config;
 	/** Backend API determined at compile-time based on backend type */
@@ -122,29 +120,6 @@ struct zbus_proxy_agent_backend_api {
 	int (*backend_set_recv_cb)(const struct zbus_proxy_agent *agent,
 				   zbus_proxy_agent_recv_cb_t recv_cb);
 };
-
-/**
- * @brief Structure for proxy agent backend descriptor.
- */
-struct zbus_proxy_agent_backend_desc {
-	/** Type of the backend */
-	enum zbus_proxy_agent_backend_type type;
-	/** API for the backend */
-	const struct zbus_proxy_agent_backend_api *api;
-};
-
-/**
- * @brief Macro to define a proxy agent backend and register it in the iterable section.
- *
- * @param _name Name of the backend instance
- * @param _type Backend type (e.g., ZBUS_PROXY_AGENT_BACKEND_IPC)
- * @param _api Pointer to the backend API structure
- */
-#define ZBUS_PROXY_AGENT_BACKEND_DEFINE(_name, _type, _api)                                        \
-	STRUCT_SECTION_ITERABLE(zbus_proxy_agent_backend_desc, _name) = {                          \
-		.type = (_type),                                                                   \
-		.api = (_api),                                                                     \
-	}
 
 /**
  * @brief Internal proxy agent listener callback.
@@ -192,7 +167,6 @@ int zbus_init_proxy_agent(const struct zbus_proxy_agent *agent);
 	static k_tid_t _name##_thread_id;                                                          \
 	const struct zbus_proxy_agent _name = {                                                    \
 		.name = #_name,                                                                    \
-		.type = _type,                                                                     \
 		.backend_config = _ZBUS_PROXY_AGENT_GET_BACKEND_CONFIG(_name, _type),              \
 		.backend_api = _ZBUS_PROXY_AGENT_GET_BACKEND_API(_type),                           \
 		.thread = &_name##_thread,                                                         \
@@ -357,4 +331,4 @@ void zbus_proxy_agent_log_shadow_pub_denied(const struct zbus_proxy_agent *agent
 }
 #endif
 
-#endif /* ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_H_ */
+#endif /* ZEPHYR_INCLUDE_ZBUS_PROXY_AGENT_ZBUS_PROXY_AGENT_H_ */

@@ -64,7 +64,7 @@ struct flash_area {
 	size_t fa_size;
 	/** Backing flash device */
 	const struct device *fa_dev;
-#if CONFIG_FLASH_MAP_LABELS
+#if defined(CONFIG_FLASH_MAP_LABELS)
 	/** Partition label if defined in DTS. Otherwise nullptr; */
 	const char *fa_label;
 #endif
@@ -134,7 +134,10 @@ int flash_area_open(uint8_t id, const struct flash_area **fa);
  *
  * @param[in] fa Flash area to be closed.
  */
-void flash_area_close(const struct flash_area *fa);
+static inline void flash_area_close(__unused const struct flash_area *fa)
+{
+	/* nothing to do for now */
+}
 
 /**
  * @brief Verify that a device assigned to flash area is ready for use.
@@ -327,9 +330,11 @@ int flash_area_has_driver(const struct flash_area *fa);
  *
  * @return device driver.
  */
-const struct device *flash_area_get_device(const struct flash_area *fa);
+static inline const struct device *flash_area_get_device(const struct flash_area *fa)
+{
+	return fa->fa_dev;
+}
 
-#if CONFIG_FLASH_MAP_LABELS
 /**
  * Get the label property from the device tree
  *
@@ -337,8 +342,15 @@ const struct device *flash_area_get_device(const struct flash_area *fa);
  *
  * @return The label property if it is defined, otherwise NULL
  */
-const char *flash_area_label(const struct flash_area *fa);
-#endif
+static inline const char *flash_area_label(const struct flash_area *fa)
+{
+#if defined(CONFIG_FLASH_MAP_LABELS)
+	return fa->fa_label;
+#else /* CONFIG_FLASH_MAP_LABELS */
+	ARG_UNUSED(fa);
+	return NULL;
+#endif /* CONFIG_FLASH_MAP_LABELS */
+}
 
 /**
  * Get the value expected to be read when accessing any erased
@@ -394,13 +406,7 @@ uint8_t flash_area_erased_val(const struct flash_area *fa);
  *
  * @return offset, as defined for the partition in DTS.
  */
-#define PARTITION_OFFSET(label)									\
-	COND_CODE_1(DT_NODE_HAS_COMPAT(DT_NODELABEL(label), zephyr_mapped_partition),		\
-		    (DT_MAPPED_PARTITION_OFFSET(DT_NODELABEL(label))),				\
-		    (COND_CODE_1(DT_FIXED_SUBPARTITION_EXISTS(DT_NODELABEL(label)),		\
-				(DT_PROP_BY_IDX(DT_PARENT(DT_NODELABEL(label)), reg, 0) +	\
-				 DT_PROP_BY_IDX(DT_NODELABEL(label), reg, 0)), \
-				(DT_PROP_BY_IDX(DT_NODELABEL(label), reg, 0)))))
+#define PARTITION_OFFSET(label) PARTITION_NODE_OFFSET(DT_NODELABEL(label))
 
 /** Deprecated macro, replace with PARTITION_OFFSET() */
 #define FIXED_PARTITION_OFFSET(label) PARTITION_OFFSET(label) __DEPRECATED_MACRO
@@ -446,10 +452,12 @@ uint8_t flash_area_erased_val(const struct flash_area *fa);
  *
  * @return offset, as defined for the partition in DTS.
  */
-#define PARTITION_NODE_OFFSET(node)						\
-	COND_CODE_1(DT_NODE_HAS_COMPAT(node, zephyr_mapped_partition),		\
-		    (DT_MAPPED_PARTITION_OFFSET(node)),				\
-		    (DT_REG_ADDR(node)))
+#define PARTITION_NODE_OFFSET(node)								\
+	COND_CASE_1(DT_NODE_HAS_COMPAT(node, zephyr_mapped_partition),				\
+		    (DT_MAPPED_PARTITION_OFFSET(node)),						\
+		    DT_FIXED_SUBPARTITION_EXISTS(node),						\
+		    (DT_PROP_BY_IDX(DT_PARENT(node), reg, 0) + DT_PROP_BY_IDX(node, reg, 0)),	\
+		    ((DT_PROP_BY_IDX(node, reg, 0))))
 
 /** Deprecated macro, replace with PARTITION_NODE_OFFSET() */
 #define FIXED_PARTITION_NODE_OFFSET(label) PARTITION_NODE_OFFSET(label) __DEPRECATED_MACRO

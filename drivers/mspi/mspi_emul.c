@@ -57,7 +57,7 @@ struct mspi_emul_data {
 	struct mspi_scramble_cfg      scramble_cfg;
 	/* Timing configurations */
 	struct mspi_timing_cfg        timing_cfg;
-	/* local storage of mspi callback hanlder */
+	/* local storage of mspi callback handler */
 	mspi_callback_handler_t       cbs[MSPI_BUS_EVENT_MAX];
 	/* local storage of mspi callback context */
 	struct mspi_callback_context  *cb_ctxs[MSPI_BUS_EVENT_MAX];
@@ -842,7 +842,7 @@ int mspi_emul_register(const struct device *dev, struct mspi_emul *emul)
 }
 
 /* Device instantiation */
-static struct emul_mspi_driver_api emul_mspi_driver_api = {
+static DEVICE_API(emul_mspi, emul_driver_api) = {
 	.mspi_api = {
 			.config                = mspi_emul_config,
 			.dev_config            = mspi_emul_dev_config,
@@ -904,6 +904,6 @@ static struct emul_mspi_driver_api emul_mspi_driver_api = {
 			      &mspi_emul_cfg_##n,                                                 \
 			      POST_KERNEL,                                                        \
 			      CONFIG_MSPI_INIT_PRIORITY,                                          \
-			      &emul_mspi_driver_api);
+			      &emul_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(MSPI_EMUL_INIT)

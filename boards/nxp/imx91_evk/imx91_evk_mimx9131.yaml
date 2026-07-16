@@ -15,6 +15,9 @@ ram: 1024
 supported:
   - counter
   - gpio
-  - uart
   - i2c
+  - uart
+testing:
+  binaries:
+    - flash.bin
 vendor: nxp

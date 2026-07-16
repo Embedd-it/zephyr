@@ -46,10 +46,18 @@ LOG_MODULE_REGISTER(gpio_bl60x_bl70x);
 #define GPIO_BFLB_TRIG_MODE_SYNC_LOW       0
 #define GPIO_BFLB_TRIG_MODE_SYNC_HIGH      1
 #define GPIO_BFLB_TRIG_MODE_SYNC_LEVEL     2
+#define GPIO_BFLB_TRIG_MODE_SYNC_EDGE_BOTH 4
 
+#if defined(CONFIG_SOC_SERIES_BL70XL)
+#define GPIO_BFLB_PIN_INT_PER_REG    8
+#define GPIO_BFLB_PIN_INT_REG_SIZE   4
+#define GPIO_BFLB_PIN_INT_REG_MSK    GENMASK(3, 0)
+#else
 #define GPIO_BFLB_PIN_INT_PER_REG    10
 #define GPIO_BFLB_PIN_INT_REG_SIZE   3
 #define GPIO_BFLB_PIN_INT_REG_MSK    GENMASK(2, 0)
+#endif
+
 #define GPIO_BFLB_PIN_REG_SIZE_SHIFT 2
 
 #define GPIO_BFLB_BL70X_PSRAM_START 23
@@ -59,7 +67,7 @@ LOG_MODULE_REGISTER(gpio_bl60x_bl70x);
 #define GLB_GPIO_CFG_OFFSET(pin) \
 	GLB_GPIO_CFGCTL0_OFFSET + ((pin) / GPIO_BFLB_PIN_PER_WORD * GPIO_BFLB_WORDSIZE)
 
-/* this driver supports only 32 GPIO, which happens to be the maximum on BL6 and 7 serie.
+/* this driver supports only 32 GPIO, which happens to be the maximum on BL6 and 7 series.
  */
 
 struct gpio_bflb_config {
@@ -151,13 +159,24 @@ static void gpio_bflb_port_interrupt_configure_mode(const struct device *dev, ui
 	tmp &= ~(GPIO_BFLB_PIN_INT_REG_MSK
 		<< ((pin % GPIO_BFLB_PIN_INT_PER_REG) * GPIO_BFLB_PIN_INT_REG_SIZE));
 
+#ifdef CONFIG_SOC_SERIES_BL70XL
+	if ((trig & GPIO_INT_HIGH_1) != 0
+		&& (trig & GPIO_INT_LOW_0) != 0
+		&& (mode & GPIO_INT_EDGE)) {
+		trig_mode |= GPIO_BFLB_TRIG_MODE_SYNC_EDGE_BOTH;
+	} else if ((trig & GPIO_INT_HIGH_1) != 0) {
+		trig_mode |= GPIO_BFLB_TRIG_MODE_SYNC_HIGH;
+	}
+#else
 	if ((trig & GPIO_INT_HIGH_1) != 0) {
 		trig_mode |= GPIO_BFLB_TRIG_MODE_SYNC_HIGH;
 	}
+#endif
 
 	if ((mode & GPIO_INT_EDGE) == 0) {
 		trig_mode |= GPIO_BFLB_TRIG_MODE_SYNC_LEVEL;
 	}
+
 	tmp |= (trig_mode << ((pin % GPIO_BFLB_PIN_INT_PER_REG) * GPIO_BFLB_PIN_INT_REG_SIZE));
 	sys_write32(tmp, cfg->base_reg + GLB_GPIO_INT_MODE_SET1_OFFSET
 		+ ((pin / GPIO_BFLB_PIN_INT_PER_REG) << GPIO_BFLB_PIN_REG_SIZE_SHIFT));
@@ -216,14 +235,14 @@ static int gpio_bflb_config(const struct device *dev, gpio_pin_t pin,
 	tmp &= ~BIT(pin);
 	sys_write32(tmp, cfg->base_reg + GLB_GPIO_CFGCTL34_OFFSET);
 
-#if defined(CONFIG_SOC_SERIES_BL70X) || defined(CONFIG_SOC_SERIES_BL70XL)
 	is_odd = pin & 1U;
 	cfg_address = cfg->base_reg + GLB_GPIO_CFG_OFFSET(pin);
+#if defined(CONFIG_SOC_SERIES_BL70X) || defined(CONFIG_SOC_SERIES_BL70XL)
+	/* Pins 23-28 have all of their configuration, other than input / output registers and
+	 * function registers, moved to 32-37 when SF2 is internal. SF2 uses reg[0:5] / reg[16:21],
+	 * and 23-28 use the 32-27 ones.
+	 */
 	if (pin >= GPIO_BFLB_BL70X_PSRAM_START && pin <= GPIO_BFLB_BL70X_PSRAM_END) {
-		if ((flags & GPIO_INPUT) != 0) {
-			LOG_ERR("BL70x pins 23 to 28 are not capable of input");
-			return -EINVAL;
-		}
 		if (sys_read32(GLB_BASE + GLB_GPIO_USE_PSRAM__IO_OFFSET)
 			& (1 << (pin - GPIO_BFLB_BL70X_PSRAM_START))) {
 			cfg_address = cfg->base_reg + GLB_GPIO_CFGCTL0_OFFSET
@@ -232,9 +251,6 @@ static int gpio_bflb_config(const struct device *dev, gpio_pin_t pin,
 			is_odd = (pin + GPIO_BFLB_BL70X_PIN_OFFSET) & 1U;
 		}
 	}
-#else
-	is_odd = pin & 1U;
-	cfg_address = cfg->base_reg + GLB_GPIO_CFG_OFFSET(pin);
 #endif
 	pincfg = sys_read32(cfg_address);
 	pincfg &= ~(GPIO_BFLB_PIN_MSK << (GPIO_BFLB_2ND_GPIO_POS * is_odd));
@@ -278,7 +294,6 @@ static int gpio_bflb_config(const struct device *dev, gpio_pin_t pin,
 
 	/* GPIO mode */
 #if defined(CONFIG_SOC_SERIES_BL70X) || defined(CONFIG_SOC_SERIES_BL70XL)
-	/* but function goes in the right place */
 	if (pin >= GPIO_BFLB_BL70X_PSRAM_START && pin <= GPIO_BFLB_BL70X_PSRAM_END) {
 		tmp = sys_read32(cfg->base_reg + GLB_GPIO_CFG_OFFSET(pin));
 		tmp &= ~(GPIO_BFLB_FUNC_MSK
@@ -311,12 +326,6 @@ static int gpio_bflb_config(const struct device *dev, gpio_pin_t pin,
 int gpio_bflb_init(const struct device *dev)
 {
 	const struct gpio_bflb_config * const cfg = dev->config;
-
-#if defined(CONFIG_SOC_SERIES_BL70X) && !DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(psram))
-	/* Pins 23-28 are output-only (no high-Z). Route them through the PSRAM IO pads. */
-	sys_write32(GLB_CFG_GPIO_USE_PSRAM_IO_MSK,
-		    GLB_BASE + GLB_GPIO_USE_PSRAM__IO_OFFSET);
-#endif
 
 	cfg->irq_config_func(dev);
 

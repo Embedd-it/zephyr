@@ -383,7 +383,7 @@ static int intel_adsp_gpdma_power_off(const struct device *dev)
 	/* Enabling dynamic clock gating */
 	intel_adsp_gpdma_clock_disable(dev);
 
-	/* Relesing DMA ownership*/
+	/* Releasing DMA ownership*/
 	intel_adsp_gpdma_release_ownership(dev);
 #ifdef CONFIG_SOC_SERIES_INTEL_ADSP_ACE
 	/* Power down */
@@ -556,7 +556,7 @@ static DEVICE_API(dma, intel_adsp_gpdma_driver_api) = {
 		IRQ_CONNECT(DT_INST_IRQN(inst),			\
 			    DT_INST_IRQ(inst, priority), dw_dma_isr,	\
 			    DEVICE_DT_INST_GET(inst),			\
-			    DT_INST_IRQ(inst, sense));			\
+			    DT_INST_IRQ(inst, flags));			\
 		irq_enable(DT_INST_IRQN(inst));			\
 	}
 

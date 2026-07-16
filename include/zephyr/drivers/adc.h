@@ -449,12 +449,12 @@ struct adc_dt_spec {
 	COND_CODE_1(DT_PROP_HAS_NAME(node_id, io_channels, name), \
 		    (ADC_DT_SPEC_GET_BY_NAME(node_id, name)), (default_value))
 
-/** @brief Get ADC io-channel information from a DT_DRV_COMPAT devicetree
+/** @brief Get ADC io-channel information from a @c DT_DRV_COMPAT devicetree
  *         instance by name.
  *
  * @see ADC_DT_SPEC_GET_BY_NAME()
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  * @param name Channel name.
  *
  * @return Static initializer for an adc_dt_spec structure.
@@ -465,7 +465,7 @@ struct adc_dt_spec {
 /**
  * @brief Like ADC_DT_SPEC_INST_GET_BY_NAME(), with a fallback to a default value.
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  * @param name Channel name.
  * @param default_value Fallback value to expand to.
  *
@@ -566,12 +566,12 @@ struct adc_dt_spec {
 	COND_CODE_1(DT_PROP_HAS_IDX(node_id, io_channels, idx), \
 		    (ADC_DT_SPEC_GET_BY_IDX(node_id, idx)), (default_value))
 
-/** @brief Get ADC io-channel information from a DT_DRV_COMPAT devicetree
+/** @brief Get ADC io-channel information from a @c DT_DRV_COMPAT devicetree
  *         instance.
  *
  * @see ADC_DT_SPEC_GET_BY_IDX()
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  * @param idx Channel index.
  *
  * @return Static initializer for an adc_dt_spec structure.
@@ -582,7 +582,7 @@ struct adc_dt_spec {
 /**
  * @brief Like ADC_DT_SPEC_INST_GET_BY_IDX(), with a fallback to a default value.
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  * @param idx Channel index.
  * @param default_value Fallback value to expand to.
  *
@@ -623,7 +623,7 @@ struct adc_dt_spec {
  *
  * @see ADC_DT_SPEC_GET()
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  *
  * @return Static initializer for an adc_dt_spec structure.
  */
@@ -634,7 +634,7 @@ struct adc_dt_spec {
  *
  * @see ADC_DT_SPEC_GET_OR()
  *
- * @param inst DT_DRV_COMPAT instance number
+ * @param inst @c DT_DRV_COMPAT instance number
  * @param default_value Fallback value to expand to.
  *
  * @return Static initializer for a struct adc_dt_spec for the property,
@@ -967,6 +967,12 @@ struct adc_decoder_api {
 };
 
 /**
+ * @def_driverbackendgroup{ADC,adc_interface}
+ * @ingroup adc_interface
+ * @{
+ */
+
+/**
  * @brief Type definition of ADC API function for configuring a channel.
  * See adc_channel_setup() for argument descriptions.
  */
@@ -981,8 +987,7 @@ typedef int (*adc_api_read)(const struct device *dev,
 			    const struct adc_sequence *sequence);
 
 /**
- * @brief Type definition of ADC API function for setting an submit
- *        stream request.
+ * @brief Type definition of ADC API function for submitting a stream request.
  */
 typedef void (*adc_api_submit)(const struct device *dev,
 				  struct rtio_iodev_sqe *sqe);
@@ -1006,22 +1011,41 @@ typedef int (*adc_api_read_async)(const struct device *dev,
 				  struct k_poll_signal *async);
 
 /**
- * @brief ADC driver API
- *
- * This is the mandatory API any ADC driver needs to expose.
+ * @driver_ops{ADC}
  */
 __subsystem struct adc_driver_api {
+	/** @driver_ops_mandatory @copybrief adc_channel_setup */
 	adc_api_channel_setup channel_setup;
+	/** @driver_ops_mandatory @copybrief adc_read */
 	adc_api_read          read;
-#ifdef CONFIG_ADC_ASYNC
+#if defined(CONFIG_ADC_ASYNC) || defined(__DOXYGEN__)
+	/**
+	 * @driver_ops_mandatory @copybrief adc_read_async
+	 * @kconfig_dep{CONFIG_ADC_ASYNC}
+	 */
 	adc_api_read_async    read_async;
 #endif
-#ifdef CONFIG_ADC_STREAM
+#if defined(CONFIG_ADC_STREAM) || defined(__DOXYGEN__)
+	/**
+	 * @driver_ops_mandatory Submit a stream request.
+	 * @kconfig_dep{CONFIG_ADC_STREAM}
+	 */
 	adc_api_submit    submit;
+	/**
+	 * @driver_ops_optional @copybrief adc_get_decoder
+	 * @kconfig_dep{CONFIG_ADC_STREAM}
+	 */
 	adc_api_get_decoder get_decoder;
 #endif
-	uint16_t ref_internal;	/* mV */
+	/**
+	 * @driver_ops_mandatory Internal reference voltage, in millivolts.
+	 *
+	 * Set to 0 if internal reference is not supported.
+	 */
+	uint16_t ref_internal;
 };
+
+/** @} */
 
 /**
  * @brief Configure an ADC channel.
@@ -1166,15 +1190,13 @@ static inline int adc_read_async_dt(const struct adc_dt_spec *spec,
 	return adc_read_async(spec->dev, sequence, async);
 }
 
-#ifdef CONFIG_ADC_STREAM
 /**
  * @brief Get decoder APIs for that device.
  *
- * @note This function is available only if @kconfig{CONFIG_ADC_STREAM}
- * is selected.
+ * @kconfig_dep{CONFIG_ADC_STREAM}
  *
- * @param dev	Pointer to the device structure for the driver instance.
- * @param api	Pointer to the decoder which will be set upon success.
+ * @param dev		Pointer to the device structure for the driver instance.
+ * @param[out] api	Pointer to the decoder which will be set upon success.
  *
  * @returns 0 on success, negative error code otherwise.
  *
@@ -1182,28 +1204,54 @@ static inline int adc_read_async_dt(const struct adc_dt_spec *spec,
  */
 __syscall int adc_get_decoder(const struct device *dev,
 				const struct adc_decoder_api **api);
-/*
- * Generic data structure used for encoding the sample timestamp and number of channels sampled.
+
+/**
+ * @brief Generic header for encoded ADC streaming frames.
+ *
+ * This packed structure is placed at the beginning of each frame produced by the ADC RTIO
+ * subsystem. It provides the metadata needed to re-assemble the samples that follow.
  */
 struct __attribute__((__packed__)) adc_data_generic_header {
-	/* The timestamp at which the data was collected from the adc */
+	/** Timestamp (in nanoseconds) at which the data was collected. */
 	uint64_t timestamp_ns;
 
-	/*
-	 * The number of channels present in the frame.
-	 */
+	/** Number of channels present in this frame. */
 	uint8_t num_channels;
 
-	/* Shift value for all samples in the frame */
+	/** Shift value for Q-format decoding of all samples in the frame. */
 	int8_t shift;
 
 	/* This padding is needed to make sure that the 'channels' field is aligned */
 	int16_t _padding;
 
-	/* Channels present in the frame */
+	/** Channel specifications for the channels present in the frame */
 	struct adc_chan_spec channels[0];
 };
 
+/**
+ * @brief Start a continuous ADC streaming session.
+ *
+ * Submits a multishot read request to the RTIO context associated with the given IO device.
+ *
+ * The ADC driver will continuously produce completion queue entries (CQEs) as samples become
+ * available. These CQEs can be consumed using rtio_cqe_consume_block().
+ *
+ * Since the sample data itself is stored in a memory pool, the application must then get the buffer
+ * using rtio_cqe_get_mempool_buffer() before decoding the data with the driver's @ref
+ * adc_decoder_api. After processing, the buffer and CQE must be released.
+ *
+ * @kconfig_dep{CONFIG_ADC_STREAM}
+ *
+ * @param iodev        Pointer to the RTIO IO device created with @ref ADC_DT_STREAM_IODEV.
+ * @param ctx          Pointer to the RTIO context (with memory pool) that will receive the
+ *                     streaming data.
+ * @param userdata     Optional user data pointer passed through to CQEs.
+ * @param[out] handle  Optional output pointer; if non-NULL, receives the submission queue entry
+ *                     that can be used to cancel the stream.
+ *
+ * @retval 0           Success.
+ * @retval -ENOMEM     An SQE could not be acquired from the RTIO context.
+ */
 static inline int adc_stream(struct rtio_iodev *iodev, struct rtio *ctx, void *userdata,
 				struct rtio_sqe **handle)
 {
@@ -1227,6 +1275,7 @@ static inline int adc_stream(struct rtio_iodev *iodev, struct rtio *ctx, void *u
 	return 0;
 }
 
+#ifdef CONFIG_ADC_STREAM
 static inline int z_impl_adc_get_decoder(const struct device *dev,
 					    const struct adc_decoder_api **decoder)
 {
@@ -1459,7 +1508,7 @@ static inline bool adc_is_ready_dt(const struct adc_dt_spec *spec)
 /**
  * @brief Get the decoder name for the current driver
  *
- * This function depends on `DT_DRV_COMPAT` being defined.
+ * This function depends on @c DT_DRV_COMPAT being defined.
  */
 #define ADC_DECODER_NAME() UTIL_CAT(DT_DRV_COMPAT, __adc_decoder_api)
 
@@ -1507,6 +1556,25 @@ DT_FOREACH_STATUS_OKAY_NODE(Z_MAYBE_ADC_DECODER_DECLARE_INTERNAL)
 /* The default adc iodev API */
 extern const struct rtio_iodev_api __adc_iodev_api;
 
+/**
+ * @brief Define an RTIO IO device for ADC streaming.
+ *
+ * This macro creates the static data structures needed to stream ADC samples via the RTIO
+ * framework. It associates an ADC controller (identified by a Devicetree node), a set of ADC
+ * channel specifications, and one or more trigger definitions.
+ *
+ * Example usage:
+ *
+ * @code{.c}
+ * ADC_DT_STREAM_IODEV(my_iodev, DT_ALIAS(adc0), adc_channels,
+ *                    {ADC_TRIG_FIFO_FULL, ADC_STREAM_DATA_INCLUDE});
+ * @endcode
+ *
+ * @param name        Variable name for the resulting @c struct rtio_iodev.
+ * @param dt_node     Devicetree node identifier of the ADC controller.
+ * @param adc_dt_spec Array of @ref adc_dt_spec channel specifications.
+ * @param ...         One or more @ref adc_stream_trigger initializers.
+ */
 #define ADC_DT_STREAM_IODEV(name, dt_node, adc_dt_spec, ...)					\
 	static struct adc_stream_trigger _CONCAT(__trigger_array_, name)[] = {__VA_ARGS__};	\
 	static struct adc_read_config _CONCAT(__adc_read_config_, name) = {			\

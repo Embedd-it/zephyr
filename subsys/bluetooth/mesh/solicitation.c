@@ -234,8 +234,9 @@ void bt_mesh_sol_recv(struct net_buf_simple *buf, uint8_t uuid_list_len)
 			break;
 		}
 
-		if (buf->len <= reported_len - 3) {
-			LOG_DBG("Invalid length (%u) Solicitation PDU", buf->len);
+		if (reported_len < 3 || buf->len <= reported_len - 3) {
+			LOG_DBG("Invalid length: buf->len=%u reported_len=%u Solicitation PDU",
+				buf->len, reported_len);
 			return;
 		}
 
@@ -252,6 +253,15 @@ void bt_mesh_sol_recv(struct net_buf_simple *buf, uint8_t uuid_list_len)
 		LOG_DBG("Invalid type %d, expected 0x00", type);
 		return;
 	}
+
+	/* Trim any trailing AD structures left attached by the scan callback:
+	 * the encrypted Solicitation PDU has a fixed length of 17 octets.
+	 */
+	if (buf->len < 17) {
+		LOG_DBG("Truncated Solicitation PDU (len %u)", buf->len);
+		return;
+	}
+	buf->len = 17;
 
 	sub = bt_mesh_subnet_find(sol_pdu_decrypt, (void *)buf);
 	if (!sub) {
