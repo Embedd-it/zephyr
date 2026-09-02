@@ -1,6 +1,8 @@
 /*
  * SPDX-FileCopyrightText: Copyright Nordic Semiconductor ASA
  * SPDX-FileCopyrightText: Copyright 2025 NXP
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Renesas Electronics Corporation
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -184,11 +186,6 @@ const void *usbh_desc_get_next_function(const void *const desc)
 	/* Skip all interfaces the Association descriptor contains */
 	if (usbh_desc_is_valid_association(head)) {
 		skip_num = ass_d->bInterfaceCount;
-	}
-
-	/* Skip the interface if the head is interface */
-	if (usbh_desc_is_valid_interface(head)) {
-		skip_num = 1;
 	}
 
 	while (true) {
