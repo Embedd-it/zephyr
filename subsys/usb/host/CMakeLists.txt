@@ -36,3 +36,7 @@ zephyr_library_sources_ifdef(
 )
 
 zephyr_linker_sources(DATA_SECTIONS usbh_data.ld)
+
+if(CONFIG_FILE_SYSTEM_LITTLEFS)
+  zephyr_library_link_libraries(LITTLEFS)
+endif()
