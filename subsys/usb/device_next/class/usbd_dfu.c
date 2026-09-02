@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2024 Nordic Semiconductor ASA
+ * Copyright (c) 2026 Renesas Electronics Corporation
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -674,8 +675,8 @@ static struct net_buf *handle_upload(struct usbd_class_data *const c_data,
 	ret = image->read_cb(image->priv, setup->wValue, size, buf->data);
 	if (ret >= 0) {
 		net_buf_add(buf, ret);
-		if (ret < sys_le16_to_cpu(dfu_desc.wTransferSize)) {
-			data->state = DFU_IDLE;
+		if (ret < sys_le16_to_cpu(setup->wLength)) {
+			data->next = DFU_IDLE;
 		}
 	} else {
 		dfu_error(c_data, DFU_ERROR, ERR_UNKNOWN);
@@ -691,19 +692,28 @@ static int handle_download(struct usbd_class_data *const c_data,
 {
 	struct usbd_dfu_data *data = usbd_class_get_private(c_data);
 	struct usbd_dfu_image *const image = data->image;
-	const uint8_t *buf_data = NULL;
-	uint16_t size = 0;
+	uint16_t size;
+	uint8_t *buf_data;
 	int ret;
 
-	if (buf != NULL) {
+	if (likely(buf != NULL)) {
 		size = MIN(setup->wLength, buf->len);
 		buf_data = buf->data;
+	} else if (setup->wLength == 0) {
+		/* Zero Length DFU_DNLOAD request with no payload */
+		size = 0;
+		buf_data = NULL;
+	} else {
+		errno = -ENOTSUP;
+		dfu_error(c_data, DFU_ERROR, ERR_UNKNOWN);
+		return 0;
 	}
 
 	ret = image->write_cb(image->priv, setup->wValue, size, buf_data);
 	if (ret < 0) {
 		dfu_error(c_data, DFU_ERROR, ERR_UNKNOWN);
-		return -ENOTSUP;
+	} else if (size == 0) {
+		data->next = DFU_MANIFEST_SYNC;
 	}
 
 	return 0;
