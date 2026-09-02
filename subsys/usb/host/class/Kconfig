@@ -4,3 +4,4 @@
 
 rsource "Kconfig.uvc"
 rsource "Kconfig.billboard"
+rsource "Kconfig.vendor"
