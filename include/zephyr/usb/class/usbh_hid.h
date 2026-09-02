@@ -330,6 +330,427 @@ int usbh_hid_report_get_usage_id_i32(const struct usbh_hid_report_field *field, 
  * @}
  */
 
+#include <zephyr/device.h>
+#include <zephyr/usb/class/hid.h>
+
+/**
+ * @brief Starts the input interrupt pipeline
+ *
+ * @param dev  Pointer to the device
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_start_input_reports_t)(const struct device *dev);
+
+/**
+ * @brief Stops the input interrupt pipeline
+ *
+ * @param dev  Pointer to the device
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_stop_input_reports_t)(const struct device *dev);
+
+/**
+ * @brief Reads the report descriptor of the device
+ *
+ * @param      dev     Pointer to the device
+ * @param[out] report  Pointer to the report structure to fill
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_get_report_descriptor_t)(const struct device *dev,
+						struct usbh_hid_report *report);
+
+/**
+ * @brief Reads a report from the device
+ *
+ * @param      dev        Pointer to the device
+ * @param      type       Report type
+ * @param      report_id  Report ID (0 if not relevant)
+ * @param      length     Output buffer length (should be inquired from the report descriptor)
+ * @param[out] buffer     Output buffer
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_get_report_t)(const struct device *dev, enum usbh_hid_report_field_type type,
+				     uint8_t report_id, size_t length, uint8_t *buffer);
+
+/**
+ * @brief Sends a report (output or feature) to the device
+ *
+ * @param dev          Pointer to the device
+ * @param type         Report type
+ * @param report_id    Report ID (if the device supports multiple repornt variants on the endpoint)
+ * @param data_length  Length of the report data
+ * @param data         Report data
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_set_report_t)(const struct device *dev, enum usbh_hid_report_field_type type,
+				     uint8_t report_id, size_t data_length, const uint8_t *data);
+
+/**
+ * @brief Registers a callback to be invoked on input report
+ *
+ * @param dev          Pointer to the device
+ * @param callback     User-defined callback
+ * @param user_data    Optional void pointer to be provided to the callback
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_set_input_callback_t)(const struct device *dev,
+					     usbh_hid_report_cb_t callback, void *user_data);
+
+/**
+ * @brief Set an idle rate for a specific report ID
+ *
+ * @details A report ID of 0 implies all reports will take the specified idle rate.
+ * The idle period can only be set in multiples of 4 milliseconds.
+ *
+ * @param dev             Pointer to the device
+ * @param report_id       ID of the report under inspection
+ * @param idle_period_ms  Maximum period in milliseconds between idle reports
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_set_idle_rate_t)(const struct device *dev, uint8_t report_id,
+					uint16_t idle_period_ms);
+
+/**
+ * @brief Get the idle rate for a specific report ID
+ *
+ * @param      dev             Pointer to the device
+ * @param      report_id       ID of the report under inspection
+ * @param[out] idle_period_ms  Maximum period in milliseconds between idle reports
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_get_idle_rate_t)(const struct device *dev, uint8_t report_id,
+					uint16_t *idle_period_ms);
+
+/**
+ * @brief Set the device's report protocol
+ *
+ * @param dev             Pointer to the device
+ * @param protocol_code   Protocol code. `HID_PROTOCOL_BOOT`, `HID_PROTOCOL_REPORT` or a proprietary
+ * variant.
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_set_protocol_t)(const struct device *dev, uint8_t protocol_code);
+
+/**
+ * @brief Get the idle rate for a specific report ID
+ *
+ * @param      dev             Pointer to the device
+ * @param[out] protocol_code   Protocol code output pointer
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+typedef int (*usbh_hid_get_protocol_t)(const struct device *dev, uint8_t *protocol_code);
+
+/**
+ * @driver_ops{USBH HID}
+ */
+__subsystem struct usbh_hid_driver_api {
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_start_input_reports
+	 */
+	usbh_hid_start_input_reports_t start_input_reports;
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_stop_input_reports
+	 */
+	usbh_hid_stop_input_reports_t stop_input_reports;
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_get_report_descriptor
+	 */
+	usbh_hid_get_report_descriptor_t get_report_descriptor;
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_get_report
+	 */
+	usbh_hid_get_report_t get_report;
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_set_report
+	 */
+	usbh_hid_set_report_t set_report;
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_set_input_callback
+	 */
+	usbh_hid_set_input_callback_t set_input_callback;
+
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_set_idle_rate
+	 */
+	usbh_hid_set_idle_rate_t set_idle_rate;
+
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_get_idle_rate
+	 */
+	usbh_hid_get_idle_rate_t get_idle_rate;
+
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_set_protocol
+	 */
+	usbh_hid_set_protocol_t set_protocol;
+
+	/**
+	 * @driver_ops_optional @copybrief usbh_hid_get_protocol
+	 */
+	usbh_hid_get_protocol_t get_protocol;
+};
+
+/**
+ * @brief Start the input report pipeline
+ *
+ * Activates the interrupt input pipeline, prompting the underlying USB host controller to
+ * periodically send updates.
+ *
+ * @param dev  Pointer to the device structure for the driver instance.
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_start_input_reports(const struct device *dev);
+
+static inline int z_impl_usbh_hid_start_input_reports(const struct device *dev)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->start_input_reports == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->start_input_reports(dev);
+}
+
+/**
+ * @brief Stops the input report pipeline
+ *
+ * @param dev  Pointer to the device structure for the driver instance.
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_stop_input_reports(const struct device *dev);
+
+static inline int z_impl_usbh_hid_stop_input_reports(const struct device *dev)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->stop_input_reports == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->stop_input_reports(dev);
+}
+
+/**
+ * @brief Reads the report descriptor of the device
+ *
+ * @note Not available from user mode: the report descriptor is several KB in size and is
+ * copied out in full, which is not a safely marshallable syscall.
+ *
+ * @param      dev     Pointer to the device structure for the driver instance.
+ * @param[out] report  Pointer to the report structure to
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+static inline int usbh_hid_get_report_descriptor(const struct device *dev,
+						  struct usbh_hid_report *report)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->get_report_descriptor == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->get_report_descriptor(dev, report);
+}
+
+/**
+ * @brief Reads a report from the device
+ *
+ * @param      dev        Pointer to the device
+ * @param      type       Report type
+ * @param      report_id  Report ID (0 if not relevant)
+ * @param      length     Output buffer length (should be inquired from the report descriptor)
+ * @param[out] buffer     Output buffer
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_get_report(const struct device *dev, enum usbh_hid_report_field_type type,
+				  uint8_t report_id, size_t length, uint8_t *buffer);
+
+static inline int z_impl_usbh_hid_get_report(const struct device *dev,
+					     enum usbh_hid_report_field_type type,
+					     uint8_t report_id, size_t length, uint8_t *buffer)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->get_report == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->get_report(dev, type, report_id, length, buffer);
+}
+
+/**
+ * @brief Sends a report (output or feature) to the device
+ *
+ * @param dev          Pointer to the device
+ * @param type         Report type
+ * @param report_id    Report ID (if the device supports multiple repornt variants on the endpoint)
+ * @param data_length  Length of the report data
+ * @param data         Report data
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_set_report(const struct device *dev, enum usbh_hid_report_field_type type,
+				  uint8_t report_id, size_t data_length, const uint8_t *data);
+
+static inline int z_impl_usbh_hid_set_report(const struct device *dev,
+					     enum usbh_hid_report_field_type type,
+					     uint8_t report_id, size_t data_length,
+					     const uint8_t *data)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->set_report == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->set_report(dev, type, report_id, data_length, data);
+}
+
+/**
+ * @brief Registers a callback to be invoked on input report
+ *
+ * @note Not available from user mode: the kernel cannot safely invoke a function pointer
+ * supplied by a user thread. Supervisor-mode callers only.
+ *
+ * @param dev          Pointer to the device
+ * @param callback     User-defined callback
+ * @param user_data    Optional void pointer to be provided to the callback
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+static inline int usbh_hid_set_input_callback(const struct device *dev,
+					      usbh_hid_report_cb_t callback, void *user_data)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->set_input_callback == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->set_input_callback(dev, callback, user_data);
+}
+
+/**
+ * @brief Set an idle rate for a specific report ID
+ *
+ * @details A report ID of 0 implies all reports will take the specified idle rate.
+ * The idle period can only be set in multiples of 4 milliseconds.
+ *
+ * @param dev             Pointer to the device
+ * @param report_id       ID of the report under inspection
+ * @param idle_period_ms  Maximum period in milliseconds between idle reports
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_set_idle_rate(const struct device *dev, uint8_t report_id,
+				     uint16_t idle_period_ms);
+
+static inline int z_impl_usbh_hid_set_idle_rate(const struct device *dev, uint8_t report_id,
+						uint16_t idle_period_ms)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	/* The idle period must be in multiples of 4 */
+	if ((idle_period_ms % 4) != 0) {
+		return -EINVAL;
+	}
+
+	/* The idle period / 4 must fit in a single byte */
+	if ((idle_period_ms / 4) > 255) {
+		return -EINVAL;
+	}
+
+	if (api->set_idle_rate == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->set_idle_rate(dev, report_id, idle_period_ms);
+}
+
+/**
+ * @brief Get the idle rate for a specific report ID
+ *
+ * @param      dev             Pointer to the device
+ * @param      report_id       ID of the report under inspection
+ * @param[out] idle_period_ms  Maximum period in milliseconds between idle reports
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_get_idle_rate(const struct device *dev, uint8_t report_id,
+				     uint16_t *idle_period_ms);
+
+static inline int z_impl_usbh_hid_get_idle_rate(const struct device *dev, uint8_t report_id,
+						uint16_t *idle_period_ms)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->get_idle_rate == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->get_idle_rate(dev, report_id, idle_period_ms);
+}
+
+/**
+ * @brief Set the device's report protocol
+ *
+ * @param dev             Pointer to the device
+ * @param protocol_code   Protocol code. `HID_PROTOCOL_BOOT`, `HID_PROTOCOL_REPORT` or a proprietary
+ * variant.
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_set_protocol(const struct device *dev, uint8_t protocol_code);
+
+static inline int z_impl_usbh_hid_set_protocol(const struct device *dev, uint8_t protocol_code)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->set_protocol == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->set_protocol(dev, protocol_code);
+}
+
+/**
+ * @brief Get the idle rate for a specific report ID
+ *
+ * @param      dev             Pointer to the device
+ * @param[out] protocol_code   Protocol code output pointer
+ *
+ * @return 0 on success, negative errno value on failure.
+ */
+__syscall int usbh_hid_get_protocol(const struct device *dev, uint8_t *protocol_code);
+
+static inline int z_impl_usbh_hid_get_protocol(const struct device *dev, uint8_t *protocol_code)
+{
+	const struct usbh_hid_driver_api *api = DEVICE_API_GET(usbh_hid, dev);
+
+	if (api->get_protocol == NULL) {
+		return -ENOSYS;
+	}
+
+	return api->get_protocol(dev, protocol_code);
+}
+
+#include <zephyr/syscalls/usbh_hid.h>
+
 #ifdef __cplusplus
 }
 #endif
