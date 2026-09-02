@@ -1,5 +1,7 @@
 /*
  * SPDX-FileCopyrightText: Copyright Nordic Semiconductor ASA
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Renesas Electronics Corporation
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,6 +10,7 @@
 
 #include <stdint.h>
 #include <zephyr/usb/usbh.h>
+#include <zephyr/usb/bos.h>
 #include <zephyr/drivers/usb/uhc.h>
 
 /* Callback type to be used for e.g. synchronous requests */
@@ -26,6 +29,9 @@ struct usb_device *usbh_device_get(struct usbh_context *const uhs_ctx, const uin
 /* Allocate/free USB device */
 struct usb_device *usbh_device_alloc(struct usbh_context *const uhs_ctx);
 void usbh_device_free(struct usb_device *const udev);
+
+/* Fetch bos descriptor */
+int usbh_device_fetch_bos_desc(struct usb_device *const udev);
 
 /* Reset and configure new USB device */
 int usbh_device_init(struct usb_device *const udev);
@@ -80,6 +86,18 @@ static inline struct net_buf *usbh_xfer_buf_alloc(struct usb_device *udev,
 	struct usbh_context *const ctx = udev->ctx;
 
 	return uhc_xfer_buf_alloc(ctx->dev, size);
+}
+
+static inline struct uhc_transfer *usbh_xfer_alloc_with_buf(
+					     struct usb_device *const udev,
+					     const uint8_t ep,
+					     void *const cb,
+					     void *const cb_priv,
+					     size_t size) {
+
+	struct usbh_context *const ctx = udev->ctx;
+
+	return uhc_xfer_alloc_with_buf(ctx->dev, ep, udev, cb, cb_priv, size);
 }
 
 static inline int usbh_xfer_free(const struct usb_device *udev,
