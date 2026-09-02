@@ -1,0 +1,86 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Renesas Electronics Corporation
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&s28hl512t {
+	status = "okay";
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Note: According to datasheet, 256K blocks start at address 0x40000 */
+		dfufw_partition: partition@40000 {
+			label = "dfufw_storage";
+
+			/* Full range of 256K blocks */
+			/* reg = <0x40000 0x3fc0000>; */
+
+			/* Quick steps:
+			   NOTE: Using only a 1M filesystem because flashing is quite slow.
+			   (A) Create the 'littlefs_dir' directory and create/copy some FW files into it..
+			       Files with a '.dfu' extension will have to pass the DFU suffix check.
+			       Files without the '.dfu' extension will be uploaded as they are.
+			       You can add a DFU suffix to any file by running the command:
+				 `dfu-suffix -a <my_fw_filename.dfu>`
+			   (B) Command to create a 1M filesystem, placed at offset 0x40000 in NOR flash:
+			       The arguments must match the .dts settings in this .overlay file.
+				 `mklittlefs -c littlefs_dir -b 0x40000 -p 16 -s 0x100000 littlefs_dfu_1M.bin`
+			   (C) Disconnect the board, populate J16, plug the board back in, and use the
+			       following command to load the filesystem onto the NOR flash:
+				 `rfp-cli -d ra -tool jlink -external-loader EK-RA8M1 -bin 0x90040000 littlefs_dfu_1M.bin -e -p -v`
+			   (D) When flashing is done, unplug the board, remove J16, then plug the board back in.
+			   (E) Flash the usb/shell demo as usual
+			*/
+			/* 1M of space */
+			reg = <0x40000 0x100000>;
+		};
+	};
+};
+
+/ {
+	fstab {
+	compatible = "zephyr,fstab";
+		lfs1: lfs1 {
+			compatible = "zephyr,fstab,littlefs";
+			mount-point = "/lfs1";
+			partition = <&storage_partition>;
+			read-size = <16>;
+			prog-size = <256>;
+			cache-size = <4096>;
+			lookahead-size = <32>;
+			block-cycles = <512>;
+		};
+	};
+
+	usbh_dfu: usbh_dfu {
+		compatible = "zephyr,usbh-dfu";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		any_dfu_device: dfu-device@ffffffff {
+			compatible = "zephyr,usbh-dfu-device";
+			reg = <0xffffffff>;
+			status="okay";
+			match-class;
+		};
+	};
+
+	usbh_dfurt: usbh_dfurt {
+		compatible = "zephyr,usbh-dfu";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		any_dfurt_device: dfurt-device@ffffffff {
+			compatible = "zephyr,usbh-dfurt-device";
+			reg = <0xffffffff>;
+			status="okay";
+			match-class;
+		};
+	};
+};
