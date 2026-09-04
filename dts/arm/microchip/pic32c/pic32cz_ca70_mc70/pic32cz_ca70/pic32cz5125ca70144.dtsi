@@ -1,0 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <microchip/pic32c/pic32cz_ca70_mc70/common/pic32cz_ca70_mc70_144.dtsi>
+#include <microchip/pic32c/pic32cz_ca70_mc70/common/pic32cz_5125_ca70_mc70.dtsi>
