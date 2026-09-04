@@ -1,0 +1,7 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <dt-bindings/pic32c/pic32cz_ca/pic32cz_ca70/pic32cz2051ca70144-pinctrl.h>

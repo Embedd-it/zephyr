@@ -1,0 +1,37 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <microchip/pic32c/pic32cz_ca70_mc70/pic32cz_ca70/pic32cz2051ca70144.dtsi>
+#include "pic32cz_ca70_cult-pinctrl.dtsi"
+
+/ {
+	compatible = "pic32cz_ca70,cult", "microchip,pic32cz2051ca70144";
+	model = "PIC32CZ CA70 Curiosity Ultra";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	aliases {
+		led0 = &led0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led0: led_0 {
+			gpios = <&piod 29 GPIO_ACTIVE_LOW>;
+			label = "User LED 1";
+		};
+	};
+};
+
+&cpu0 {
+	clock-frequency = <12000000>;
+};
