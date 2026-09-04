@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: Copyright (c) 2021-2023, Gerson Fernando Budke <nandojve@gmail.com>
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip PIO g1 driver.
+
+description: |
+  Microchip GPIO g1 driver.
+
+  This driver is responsible for configuring
+  and managing the PIO peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="PIO" id="11004" version="V"
+
+compatible: "microchip,pio-g1-gpio"
+
+include: [gpio-controller.yaml, base.yaml]
+
+properties:
+  reg:
+    required: true
+
+  "#gpio-cells":
+    const: 2
+
+  slow-clock-divider:
+    default: 0
+    type: int
+    min: 0
+    max: 16383
+    description: |
+      Value written to the PIO_SCDR register. As per section 31.5.9
+      of the datasheet, when the debounce filter is enabled for a pin
+      it filters out pulses of duration less of 1/2 of the period
+      resulting from the following equation:
+        ((DIV+1)*2)*tslck
+      Where DIV is the aforementioned divider and tsclk is the period
+      of the slow clock.
+
+gpio-cells:
+  - pin
+  - flags
