@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config PINCTRL_MCHP_COMMON
@@ -13,6 +13,14 @@ config PINCTRL_MCHP_PORT_G1
 	select PINCTRL_MCHP_COMMON
 	help
 	  This option enables PINCTRL driver for group (g1) of PORT peripherals.
+
+config PINCTRL_MCHP_PIO_G1
+	bool
+	default y
+	depends on DT_HAS_MICROCHIP_PIO_G1_PINCTRL_ENABLED
+	select PINCTRL_MCHP_COMMON
+	help
+	  This option enables PINCTRL driver for group (g1) of PIO peripherals.
 
 if PINCTRL_MCHP_COMMON
 

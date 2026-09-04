@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+family:
+- name: microchip_pic32cz_ca70_mc70
+  series:
+  - name: pic32cz_ca70
+    socs:
+    - name: pic32cz2051ca70064
+    - name: pic32cz2051ca70100
+    - name: pic32cz2051ca70144
+    - name: pic32cz1038ca70064
+    - name: pic32cz1038ca70100
+    - name: pic32cz1038ca70144
+    - name: pic32cz5125ca70064
+    - name: pic32cz5125ca70100
+    - name: pic32cz5125ca70144

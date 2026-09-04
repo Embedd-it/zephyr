@@ -1,0 +1,10 @@
+# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_FAMILY_MICROCHIP_PIC32CZ_CA70_MC70
+	bool
+
+config SOC_FAMILY
+	default "microchip_pic32cz_ca70_mc70" if SOC_FAMILY_MICROCHIP_PIC32CZ_CA70_MC70
+
+rsource "*/Kconfig.soc"
