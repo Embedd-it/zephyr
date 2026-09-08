@@ -55,6 +55,17 @@
 			status = "disabled";
 		};
 
+		usbhs: usb@40038000 {
+			compatible = "microchip,usbhs-g2-uhc";
+			reg = <0x40038000 0x4000>, <0xa0100000 0x50000>;
+			reg-names = "core", "fifo";
+			interrupts = <34 0>;
+			interrupt-names = "usbhs";
+			clocks = <&pmc CLOCK_MCHP_USBHS>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;

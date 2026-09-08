@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip USBHS g2 host driver
+
+description: |
+    PIC32CZ CA70 Family USB (USBHS) in host mode
+
+    The USBHS controller has two memory regions:
+    - "core": USBHS register block
+    - "fifo": Dual-Port RAM (DPRAM) for endpoint FIFOs
+
+    Only one between device and host may be enabled at the same time.
+
+    Group g2 USBHS driver supports following hardware peripherals:
+      - module name="USBHS" id="11292" version="G"
+
+compatible: "microchip,usbhs-g2-uhc"
+
+include:
+  - name: usb-controller.yaml
+
+properties:
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  maximum-speed:
+    default: "high-speed"
+
+  reg:
+    required: true
+    description: |
+      Register regions for the USBHS controller.
+      Contain two entries in order:
+        - core registers
+        - fifo DPRAM
+
+  reg-names:
+    required: true
+    description: |
+      Names for the register regions. Must be "core" and "fifo".
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    usbhs: usb@40038000 {
+      compatible = "microchip,usbhs-g2-uhc";
+      reg = <0x40038000 0x4000>, <0xa0100000 0x50000>;
+      reg-names = "core", "fifo";
+      interrupts = <34 0>;
+      interrupt-names = "usbhs";
+      clocks = <&pmc CLOCK_MCHP_USBHS>;
+      clock-names = "mclk";
+      status = "disabled";
+    };
