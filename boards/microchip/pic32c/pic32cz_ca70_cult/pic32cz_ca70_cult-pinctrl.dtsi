@@ -35,6 +35,12 @@
 		};
 	};
 
+	ext2_header_afec0_ad0: ext2_header_afec_ad0 {
+		group1 {
+			pinmux = <PD30X_AFE0_AD0>;
+		};
+	};
+
 	usart0_default: usart0_default {
 		group1 {
 			pinmux = <PB01C_USART0_TXD>,
