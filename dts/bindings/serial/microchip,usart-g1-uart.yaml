@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip USART controller
+
+description: |
+  Microchip USART driver.
+
+  Group g1 USART driver supports following hardware peripherals:
+    - module name="USART" id="6089" version="ZW"
+
+compatible: microchip,usart-g1-uart
+
+include:
+  - name: uart-controller.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  baudrate-clock-source:
+    type: string
+    enum:
+      - "mck"
+      - "div"
+      - "pck"
+    default: "mck"
+    description: |
+      The source clock to use to generate the baudrate. The values have
+      the following meaning:
+        - mck: the peripheral clock.
+        - div: the peripheral clock divided by 8.
+        - pck: the programmable clock (pck4).
+
+  channel-mode:
+    type: string
+    enum:
+      - "normal"
+      - "automatic-echo"
+      - "local-loopback"
+      - "remote-loopback"
+    default: "normal"
+    description: |
+      Channel mode:
+        - In normal mode the USART simply sends on TX and receives on RX.
+        - In echo mode the receiver input is connected to the TX pin.
+        - In local loopback mode the transmitter output is connected
+            to the receiver input.
+        - In remote loopback mode the RX pin is internally connected to
+            the TX pin.
+
+  dmas:
+    description: |
+      TX & RX dma specifiers.  Each specifier will have a phandle
+      reference to the dma controller, the channel number, and peripheral
+      trigger source. The channel number is arbitrary but must not be
+      reused. The number of channels available is device dependent.
+
+      For example dmas for TX and RX may look like
+         dmas = <&xdmac 1 DMA_PERID_USART0_TX>, <&xdmac 2 DMA_PERID_USART0_RX>;
+
+  dma-names:
+    description: |
+      This should be "tx" and "rx" and should match the order given for
+      dmas.
+
+  rs485-tx-guard-time:
+    type: int
+    default: 0
+    min: 0
+    max: 255
+    description: |
+      Transmitter timeguard (US_TTGR.TG), in bit periods. Only meaningful
+      when flow-control is configured for RS485 mode. Keeps the RTS
+      driver-enable line asserted for this many extra bit periods after
+      the last character completes, so the bus stays driven long enough
+      for slower RS485 transceivers.
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    &usart0 {
+      dmas = <&xdmac 10 DMA_PERID_USART0_TX>, <&xdmac 11 DMA_PERID_USART0_RX>;
+      dma-names = "tx", "rx";
+    };

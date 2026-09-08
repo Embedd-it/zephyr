@@ -34,6 +34,26 @@
 			compatible = "mmio-sram";
 		};
 
+		usart0: usart@40024000 {
+			compatible = "microchip,usart-g1-uart";
+			reg = <0x40024000 0xec>;
+			interrupts = <13 0>;
+			interrupt-names = "usart0";
+			clocks = <&pmc CLOCK_MCHP_USART0>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		usart1: usart@40028000 {
+			compatible = "microchip,usart-g1-uart";
+			reg = <0x40028000 0xec>;
+			interrupts = <14 0>;
+			interrupt-names = "usart1";
+			clocks = <&pmc CLOCK_MCHP_USART1>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		pmc: pmc@400e0600 {
 			compatible = "microchip,pic32cz-ca70-mc70-pmc";
 			reg = <0x400e0600 0x148>, <0x400e1810 0x20>,
@@ -111,6 +131,26 @@
 			};
 		};
 
+		uart0: uart@400e0800 {
+			compatible = "microchip,uart-g2-uart";
+			reg = <0x400e0800 0xe8>;
+			interrupts = <7 0>;
+			interrupt-names = "uart0";
+			clocks = <&pmc CLOCK_MCHP_UART0>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		uart1: uart@400e0a00 {
+			compatible = "microchip,uart-g2-uart";
+			reg = <0x400e0a00 0xe8>;
+			interrupts = <8 0>;
+			interrupt-names = "uart1";
+			clocks = <&pmc CLOCK_MCHP_UART1>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		pinctrl: pinctrl@400e0e00 {
 			compatible = "microchip,pio-g1-pinctrl";
 			ranges = <0x400e0e00 0x400e0e00 0xa00>;
@@ -151,6 +191,16 @@
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
+		};
+
+		uart2: uart@400e1a00 {
+			compatible = "microchip,uart-g2-uart";
+			reg = <0x400e1a00 0xe8>;
+			interrupts = <44 0>;
+			interrupt-names = "uart2";
+			clocks = <&pmc CLOCK_MCHP_UART2>;
+			clock-names = "mclk";
+			status = "disabled";
 		};
 	};
 };
