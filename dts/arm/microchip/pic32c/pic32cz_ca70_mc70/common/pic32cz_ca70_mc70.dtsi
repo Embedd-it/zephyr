@@ -7,6 +7,7 @@
 #include <mem.h>
 #include <arm/armv7-m.dtsi>
 #include <zephyr/dt-bindings/clock/mchp_pic32cz_ca70_mc70_clock.h>
+#include <zephyr/dt-bindings/dma/mchp_pic32cz_ca70_mc70_dma.h>
 
 / {
 	cpus {
@@ -51,6 +52,18 @@
 			interrupt-names = "usart1";
 			clocks = <&pmc CLOCK_MCHP_USART1>;
 			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		xdmac: dma0: dma-controller@40078000 {
+			compatible = "microchip,xdmac-g1-dma";
+			reg = <0x40078000 0x648>;
+			interrupts = <58 0>;
+			interrupt-names = "xdmac";
+			clocks = <&pmc CLOCK_MCHP_XDMAC>;
+			clock-names = "mclk";
+			#dma-cells = <2>;
+			dma-channels = <24>;
 			status = "disabled";
 		};
 

@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip XDMAC g1 driver
+
+description: |
+  Microchip XDMAC g1 driver
+  The supported devices :
+    - module name="XDMAC" id="11161" version="K"
+
+compatible: "microchip,xdmac-g1-dma"
+
+include: dma-controller.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  "#dma-cells":
+    const: 2
+
+  dma-channels:
+    type: int
+    required: true
+    description: |
+      The number of DMA channels available in the DMA controller.
+
+dma-cells:
+  - channel
+  - perid
