@@ -41,4 +41,18 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	mikrobus_header_i2c: mikrobus_header_i2c0: mikrobus_header_i2c0 {
+		group1 {
+			pinmux = <PA03A_TWD0>,
+				 <PA04A_TWCK0>;
+		};
+	};
+
+	ext1_header_i2c: ext1_header_i2c0: ext1_header_i2c0 {
+		group1 {
+			pinmux = <PA03A_TWD0>,
+				 <PA04A_TWCK0>;
+		};
+	};
 };
