@@ -1,0 +1,123 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: PIC32CZ_CA70 clock generator
+
+description: |
+  Microchip Power Management Controller (PMC) Clock Generator block.
+  Used to configure the basic clock signals fed into the other
+  clock controllers.
+
+compatible: "microchip,pic32cz-ca70-mc70-clock-generator"
+
+include: base.yaml
+
+properties:
+  rc-frequency-mhz:
+    type: int
+    default: 12
+    enum:
+      - 4
+      - 8
+      - 12
+    description: |
+      Frequency of the main RC oscillator, a potential source for
+      MAINCK.
+
+  main-oscillator:
+    type: string
+    default: "rc"
+    enum:
+      - "rc"
+      - "xosc"
+      - "xosc-bypass"
+    description: |
+      Selects the source of MAINCK between the internal RC oscillator,
+      the main crystal oscillator, or a bypassed external clock on
+      the crystal oscillator pins.
+
+  slow-oscillator:
+    type: string
+    default: "rc"
+    enum:
+      - "rc"
+      - "xosc"
+      - "xosc-bypass"
+    description: |
+      Selects the source of SLCK between the internal RC oscillator,
+      the 32.768 kHz crystal oscillator, or a bypassed external
+      clock on the crystal oscillator pins.
+
+  slow-xosc-frequency:
+    type: int
+    default: 32768
+    description: |
+      Frequency in Hz of the slow crystal oscillator, used when
+      the SLCK oscillator source is XOSC or bypassed XOSC.
+
+  main-xosc-enabled:
+    type: boolean
+    description: |
+      Enables the main crystal oscillator. Required when the UPLL is used.
+
+  main-xosc-startup-cycles:
+    type: int
+    default: 255
+    min: 0
+    max: 255
+    description: |
+      Number of slow clock cycles to wait for the main crystal oscillator
+      to stabilize.
+
+  main-xosc-frequency-mhz:
+    type: int
+    default: 12
+    description: |
+      Frequency in MHz of the main crystal oscillator.
+
+  upll-enabled:
+    type: boolean
+    description: |
+      Enables the USB PLL during driver initialization.
+
+  upll-startup-cycles:
+    type: int
+    default: 15
+    min: 0
+    max: 15
+    description: |
+      Number of slow clock cycles to wait for the UPLL to lock at startup.
+
+  upll-div:
+    type: int
+    enum:
+      - 1
+      - 2
+    default: 1
+    description: |
+      Divider applied to the UPLL output clock.
+
+  plla-multiplier:
+    type: int
+    default: 0
+    min: 0
+    max: 2047
+    description: |
+      Multiplier applied to MAINCK to generate the PLLA output clock.
+
+  plla-lock-count:
+    type: int
+    default: 63
+    min: 0
+    max: 63
+    description: |
+      Number of slow clock cycles to wait for PLLA to lock.
+
+  plla-divider:
+    type: int
+    default: 0
+    min: 0
+    max: 255
+    description: |
+      Divider applied to MAINCK ahead of the PLLA multiplier stage.
+      A value of 0 leaves PLLA disabled.

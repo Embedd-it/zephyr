@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: PIC32CZ_CA70 generic clock controller
+
+description: |
+  Microchip Generic Clock Controller (GCLK)
+
+  The PMC node in the DTS is expected to have a `gclk` subnode
+  with a child for each generic clock that needs to be configured
+  in the system.
+
+compatible: "microchip,pic32cz-ca70-mc70-gclk"
+
+include: base.yaml
+
+child-binding:
+  description: Generic clock configuration
+  properties:
+    reg:
+      type: array
+      required: true
+      description: |
+        The Peripheral ID corresponding to the selected generic clock
+
+    source:
+      type: string
+      default: "mainck"
+      enum:
+        - "slowck"
+        - "mainck"
+        - "pllack"
+        - "upllck"
+        - "hostck"
+        - "audioclk"
+      description: |
+        Clock source selected for the generic clock.
+
+    divider:
+      type: int
+      default: 1
+      min: 1
+      max: 256
+      description: |
+        Generic clock division ratio (1-256). GCLK frequency = source / divider.
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI
+     * In this example `gclk69` is the generic clock for the peripheral
+     * with ID 69, using the mainck as source with no divider.
+     */
+    gclk: gclk {
+      compatible = "microchip,pic32cz-ca70-gclk";
+
+      #address-cells = <1>;
+      #size-cells = <0>;
+
+      gclk69: gclk@45 {
+        reg = <69>;
+        source = "mainck";
+        divider = <1>;
+      };
+    };

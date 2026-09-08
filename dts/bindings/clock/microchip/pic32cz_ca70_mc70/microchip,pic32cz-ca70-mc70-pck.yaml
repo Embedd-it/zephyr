@@ -1,0 +1,65 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: PIC32CZ_CA70 programmable clock controller
+
+description: |
+  Microchip Programmable Clock Controller (PCK)
+
+  The PMC node in the DTS is expected to have a `pck` subnode
+  with a child for each generic clock that needs to be configured
+  in the system.
+
+compatible: "microchip,pic32cz-ca70-mc70-pck"
+
+include: base.yaml
+
+child-binding:
+  description: Programmable clock configuration
+  properties:
+    reg:
+      type: array
+      required: true
+      description: |
+        The Programmable clock identifier index.
+
+    source:
+      type: string
+      default: "mainck"
+      enum:
+        - "slowck"
+        - "mainck"
+        - "pllack"
+        - "upllck"
+        - "hostck"
+      description: |
+        Clock source selected for the programmable clock.
+
+    prescaler:
+      type: int
+      default: 1
+      min: 1
+      max: 256
+      description: |
+        Prescaler applied to the selected source to generate the
+        programmable clock output.
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI
+     * In this example `pck4` is the programmable clock for the
+     * peripheral USART baudrate generation, using the PLLACK as
+     * source with a prescaler of 15.
+     */
+    pck: pck {
+      compatible = "microchip,pic32cz-ca70-pck";
+
+      #address-cells = <1>;
+      #size-cells = <0>;
+
+      pck4: pck@4 {
+        reg = <CLOCK_MCHP_PCK4_IDX>;
+        source = "pllack";
+        prescaler = <15>;
+      };
+    };

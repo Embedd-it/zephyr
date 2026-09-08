@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: PIC32CZ_CA70 host clock controller
+
+description: |
+  Microchip Host Clock Controller
+
+compatible: "microchip,pic32cz-ca70-mc70-mckr"
+
+include: base.yaml
+
+properties:
+  source:
+    type: string
+    default: "mainck"
+    enum:
+      - "slowck"
+      - "mainck"
+      - "pllack"
+      - "upllck"
+    description: |
+      Input clock source for the Host Clock Controller.
+
+  prescaler:
+    type: int
+    default: 1
+    enum:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 3
+    description: |
+      Prescaler applied to the selected source clock.
+
+  main-clock-divider:
+    type: int
+    default: 1
+    enum:
+      - 1
+      - 2
+      - 4
+      - 3
+    description: |
+      Divider applied after the prescaler to generate the
+      Master Clock and MCK.

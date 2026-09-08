@@ -6,6 +6,7 @@
 
 #include <mem.h>
 #include <arm/armv7-m.dtsi>
+#include <zephyr/dt-bindings/clock/mchp_pic32cz_ca70_mc70_clock.h>
 
 / {
 	cpus {
@@ -31,6 +32,83 @@
 
 		sram0: memory@20400000 {
 			compatible = "mmio-sram";
+		};
+
+		pmc: pmc@400e0600 {
+			compatible = "microchip,pic32cz-ca70-mc70-pmc";
+			reg = <0x400e0600 0x148>, <0x400e1810 0x20>,
+			      <0x400e0400 0x200>, <0x40088000 0x200>;
+			reg-names = "pmc", "supc", "utmi", "matrix";
+			#clock-cells = <1>;
+			status = "okay";
+
+			clock-generator {
+				compatible = "microchip,pic32cz-ca70-mc70-clock-generator";
+				rc-frequency-mhz = <12>;
+				main-xosc-enabled;
+				main-oscillator = "rc";
+				slow-oscillator = "rc";
+				plla-divider = <1>;
+				plla-multiplier = <24>;
+				upll-enabled;
+			};
+
+			mckr {
+				compatible = "microchip,pic32cz-ca70-mc70-mckr";
+				source = "pllack";
+				prescaler = <1>;
+				main-clock-divider = <4>;
+			};
+
+			pck: pck {
+				compatible = "microchip,pic32cz-ca70-mc70-pck";
+
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				pck4: pck@4 {
+					reg = <CLOCK_MCHP_PCK4_IDX>;
+					source = "pllack";
+					prescaler = <15>;
+				};
+
+				pck5: pck@5 {
+					reg = <CLOCK_MCHP_PCK5_IDX>;
+					source = "upllck";
+					prescaler = <12>;
+				};
+
+				pck6: pck@6 {
+					reg = <CLOCK_MCHP_PCK6_IDX>;
+					source = "mainck";
+					prescaler = <1>;
+				};
+
+				pck7: pck@7 {
+					reg = <CLOCK_MCHP_PCK7_IDX>;
+					source = "mainck";
+					prescaler = <1>;
+				};
+			};
+
+			gclk: gclk {
+				compatible = "microchip,pic32cz-ca70-mc70-gclk";
+
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				gclk69: gclk@45 {
+					reg = <CLOCK_MCHP_GCLK_I2SC0_IDX>;
+					source = "mainck";
+					divider = <1>;
+				};
+
+				gclk70: gclk@46 {
+					reg = <CLOCK_MCHP_GCLK_I2SC1_IDX>;
+					source = "mainck";
+					divider = <1>;
+				};
+			};
 		};
 
 		pinctrl: pinctrl@400e0e00 {

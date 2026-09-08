@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: PIC32CZ_CA70 PMC driver.
+
+description: |
+  Microchip PIC32CZ_CA70 PMC driver.
+
+  This driver is responsible for configuring
+  and managing the PMC peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="PMC" id="44006" version="P"
+
+  The Power Management Controller (PMC) optimizes power consumption by
+  controlling all system and user peripheral clocks. The PMC enables/disables
+  the clock inputs to many of the peripherals and the processor.
+
+  To specify the clocks in a peripheral the clock type and peripheral id must
+  be specified. Helper macros are defined for each possible configuration.
+
+compatible: "microchip,pic32cz-ca70-mc70-pmc"
+
+include: [clock-controller.yaml, base.yaml]
+
+properties:
+  reg:
+    required: true
+    description: |
+      Register blocks for the PMC, SUPC, UTMI and Bus Matrix peripherals,
+      identified by reg-names.
+  reg-names:
+    required: true
+    description: |
+      Names for each entry in reg: "pmc", "supc", "utmi", "matrix".
+
+  "#clock-cells":
+    const: 1
+    description: |
+      from common clock binding; shall be set to 1. It contains two entries
+      packed in a word: the type of the clock (core, system, peripheral or
+      generated) and the peripheral identification index as provided by
+      the datasheet.
+
+  tc0-pck7:
+    type: boolean
+    description: |
+      Whether to use PCK7 instead of PCK6 for the TC0 peripheral.
+
+  i2sc0-gclk:
+    type: boolean
+    description: |
+      Whether to use GCLK instead of the peripheral clock for the I2SC0
+      peripheral.
+
+  i2sc1-gclk:
+    type: boolean
+    description: |
+      Whether to use GCLK instead of the peripheral clock for the I2SC1
+      peripheral.
+
+clock-cells:
+  - subsystem
+
+examples:
+  - |
+     /* Definition example: PIC32CZ_CA70 SoC DTSI
+      * In this example `CLOCK_MCHP_USART2` is then resolved to
+      * `MCHP_CLOCK_DERIVE_ID(SUBSYS_TYPE_PERIPHERAL, 15)`, where
+      * `SUBSYS_TYPE_PERIPHERAL` is the clock type and 15 is the peripheral id.
+      * The peripheral id is usually described in the datasheet at Product Mapping
+      * figure.
+      */
+     usart2: usart2@4002c000 {
+       clocks = <&pmc CLOCK_MCHP_USART2>;
+     };
