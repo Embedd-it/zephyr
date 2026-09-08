@@ -24,10 +24,11 @@ LOG_MODULE_REGISTER(soc);
 
 void soc_early_init_hook(void)
 {
-	efc_registers_t *efc_regs = (efc_registers_t *)0x400E0C00;
+	efc_registers_t *efc_regs = (efc_registers_t *)DT_REG_ADDR(DT_NODELABEL(eefc));
 	wdt_registers_t *wdt_regs = (wdt_registers_t *)0x400E1850;
 
-	efc_regs->EEFC_FMR = EEFC_FMR_FWS(6) | EEFC_FMR_CLOE_Msk;
+	efc_regs->EEFC_FMR =
+		EEFC_FMR_FWS(DT_PROP(DT_NODELABEL(eefc), flash_wait_state)) | EEFC_FMR_CLOE_Msk;
 
 	/* The WDT is enabled and primed with a ~16 seconds period by default; disable it. */
 	wdt_regs->WDT_MR = WDT_MR_WDDIS_Msk;

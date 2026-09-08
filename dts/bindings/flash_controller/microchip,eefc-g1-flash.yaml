@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: Copyright (c) 2018, Aurelien Jarno
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip EEFC g1 driver.
+
+description: |
+  Microchip EEFC g1 driver.
+
+  This driver is responsible for configuring
+  and managing the EEFC peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="EFC" id="6450" version="Y"
+
+compatible: "microchip,eefc-g1-flash"
+
+include: flash-controller.yaml
+
+properties:
+  clocks:
+    required: true
+
+  "#erase-block-cells":
+    type: int
+    const: 2
+    description: |
+      Number of specifier cells used by phandle-array properties that reference this
+      controller as an erase-block provider, e.g. the flash0 node's "erase-blocks" property
+      (erase-blocks = <&eefc pages-count pages-size>, ...). Fixed at 2, matching the two
+      cell names declared in "erase-block-cells" below.
+
+  flash-wait-state:
+    type: int
+    default: 6
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+    description: |
+      Number of flash wait states (FWS field of EEFC_FMR) to insert between accesses.
+      Consumed by the SoC clock init code (soc.c) when configuring EEFC_FMR, before the
+      core clock is raised, so the value must match the target core clock frequency per the
+      datasheet's wait-state table. Defaults to the maximum (6) for safety at any clock speed.
+
+# Names given to the two cells of each phandle-array entry in a consumer's "erase-blocks"
+# property: the number of pages in the block and each page's size in bytes. Used by the
+# driver to build the flash_pages_layout table.
+erase-block-cells:
+  - pages-count
+  - pages-size
