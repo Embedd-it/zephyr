@@ -1,4 +1,4 @@
-# Copyright (c) 2025-2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config WDT_MCHP_G1
@@ -8,3 +8,20 @@ config WDT_MCHP_G1
 	select HAS_WDT_DISABLE_AT_BOOT
 	help
 	  Enable WDT driver for Microchip G1 IPs.
+
+config WDT_MCHP_WDT_G2
+	bool "Microchip G2 Watchdog (WDT) Driver"
+	default y
+	depends on DT_HAS_MICROCHIP_WDT_G2_WDT_ENABLED
+	select HAS_WDT_DISABLE_AT_BOOT
+	help
+	  Enable WDT driver for Microchip G2 IPs.
+
+config WDT_MCHP_RSWDT_G1
+	bool "Microchip G1 Reinforced Safety WDT \
+		(RSWDT) Driver"
+	default y
+	depends on WDT_MCHP_WDT_G2
+	depends on DT_HAS_MICROCHIP_RSWDT_G1_WDT_ENABLED
+	help
+	  Enable RSWDT driver for Microchip G1 IPs.
