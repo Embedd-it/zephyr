@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 menu "Microchip PWM Drivers"
@@ -23,6 +23,14 @@ config PWM_MCHP_TC_G1
 	bool "Microchip TC G1 PWM driver"
 	default y
 	depends on DT_HAS_MICROCHIP_TC_G1_PWM_ENABLED
+	select PINCTRL
+	help
+	  Enable the Microchip Pulse Width Modulation(PWM) driver.
+
+config PWM_MCHP_PWM_G2
+	bool "Microchip PWM G2 PWM driver"
+	default y
+	depends on  DT_HAS_MICROCHIP_PWM_G2_PWM_ENABLED
 	select PINCTRL
 	help
 	  Enable the Microchip Pulse Width Modulation(PWM) driver.
