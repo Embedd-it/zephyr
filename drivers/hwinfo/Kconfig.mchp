@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config HWINFO_MCHP_G1
@@ -9,3 +9,12 @@ config HWINFO_MCHP_G1
 	select HWINFO_HAS_DRIVER
 	help
 	  Enable mchp hwinfo driver
+
+config HWINFO_MCHP_CHIPID_G1
+	bool "Microchip CHIPID g1 hwinfo"
+	default y
+	depends on DT_HAS_MICROCHIP_CHIPID_G1_HWINFO_ENABLED || \
+			DT_HAS_MICROCHIP_RSTC_G2_RESET_ENABLED
+	select HWINFO_HAS_DRIVER
+	help
+	  Enable Microchip CHIPID g1 hwinfo driver
