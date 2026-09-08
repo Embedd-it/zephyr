@@ -8,12 +8,36 @@ config CRYPTO_MCHP_AES_G1
 	help
 	  Enable Microchip SAM Advanced Encryption Standard (AES) driver.
 
+config CRYPTO_MCHP_AES_G2
+	bool "Microchip G2 AES driver"
+	default y if DT_HAS_MICROCHIP_AES_G2_CRYPTO_ENABLED
+	help
+	  Enable Microchip G2 Advanced Encryption Standard (AES) driver.
+
+config CRYPTO_MCHP_AES_G2_DMA
+	bool "Microchip G2 AES driver DMA support"
+	depends on CRYPTO_MCHP_AES_G2
+	select DMA
+	help
+	  Let the DMA controller feed the AES peripheral's input data register
+	  (AES_IDATAR0) and drain its output data register (AES_ODATAR) into
+	  the caller's buffer, instead of the CPU handling each block from
+	  software, as described in the "DMA Mode" section of the datasheet.
+	  Requires the devicetree node to have "tx" and "rx" entries in its
+	  "dmas" property.
+
 config CRYPTO_MCHP_SHA_G1
 	bool "Microchip SAM SHA driver"
 	default y
 	depends on DT_HAS_MICROCHIP_SHA_G1_CRYPTO_ENABLED
 	help
 	  Enable Microchip SAM Secure Hash Algorithm (SHA) driver.
+
+config CRYPTO_MCHP_ICM_G1
+	bool "Microchip G1 ICM driver"
+	default y if DT_HAS_MICROCHIP_ICM_G1_CRYPTO_ENABLED
+	help
+	  Enable Microchip G1 Integrity Check Monitor (ICM) driver.
 
 config CRYPTO_MCHP_XEC_SYMCR
 	bool "Microchip XEC symmetric crypto (AES/Hash) driver"
@@ -23,3 +47,17 @@ config CRYPTO_MCHP_XEC_SYMCR
 	  Enable Microchip XEC symmetric crypto (AES/Hash) driver.
 	  Symmetric crypto provides a single hardware interface
 	  to AES and hash engines.
+
+if CRYPTO_MCHP_ICM_G1
+
+config CRYPTO_MCHP_ICM_G1_MAX_DESCRIPTORS
+	int "Microchip G1 ICM Driver maximum number of input descriptors"
+	default 4
+	range 2 1024
+	help
+	  The ICM peripheral can calculate an hash over a list of descriptors,
+	  each pointing to some data. The list allows to express a non
+	  contiguous input buffer. At least two descriptors are needed: one for
+	  the input data and one for the likely required padding buffer.
+
+endif # CRYPTO_MCHP_ICM_G1
