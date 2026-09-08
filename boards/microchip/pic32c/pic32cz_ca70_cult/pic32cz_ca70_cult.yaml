@@ -14,5 +14,6 @@ supported:
   - dma
   - gpio
   - pinctrl
+  - sdhc
   - uart
 vendor: microchip
