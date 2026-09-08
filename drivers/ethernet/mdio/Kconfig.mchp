@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config MDIO_MCHP_GMAC_G1
@@ -8,3 +8,12 @@ config MDIO_MCHP_GMAC_G1
 	default y
 	help
 	  Enable Microchip MCU Family MDIO driver.
+
+config MDIO_MCHP_GMAC_G2
+	bool "Microchip GMAC/MDIO driver"
+	default y
+	depends on DT_HAS_MICROCHIP_GMAC_G2_MDIO_ENABLED
+	depends on ETH_MCHP_GMAC_G2
+	select PINCTRL
+	help
+	  Enable GMAC/MDIO driver support for Microchip MCUs.
