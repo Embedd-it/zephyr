@@ -1,4 +1,4 @@
-# Copyright (c) 2025-2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config RTC_MCHP_G1
@@ -15,6 +15,13 @@ config RTC_MCHP_G2
 	select SYSCON
 	help
 	  Microchip Real-Time Clock (RTC) G2 driver used on SAM SoC series.
+
+config RTC_MCHP_RTC_G3
+	bool "Microchip RTC G3 driver"
+	default y
+	depends on DT_HAS_MICROCHIP_RTC_G3_RTC_ENABLED
+	help
+	  Microchip Real-Time Clock (RTC) G3 driver.
 
 config RTC_MCHP_MSS
 	bool "Microchip RTC MSS driver"
