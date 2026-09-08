@@ -1,0 +1,22 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	aliases {
+		i2s-node0 = &i2sc1;
+	};
+};
+
+&i2sc1 {
+	pinctrl-0 = <&x32_header_i2s>;
+	pinctrl-names = "default";
+
+	dmas = <&xdmac 4 DMA_PERID_I2SC1_TX_L>, <&xdmac 5 DMA_PERID_I2SC1_RX_L>;
+	dma-names = "tx", "rx";
+
+	loopback;
+	status = "okay";
+};
