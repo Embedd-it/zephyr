@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip RSWDT g1 driver
+
+description: |
+  Microchip RSWDT g1 driver.
+
+  This driver is responsible for configuring
+  and managing the RSWDT peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="RSWDT" id="11110" version="D"
+
+compatible: "microchip,rswdt-g1-wdt"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true

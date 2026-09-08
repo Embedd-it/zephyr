@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip WDT g2 driver.
+
+description: |
+  Microchip WDT g2 driver.
+
+  This driver is responsible for configuring
+  and managing the WDT peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="WDT" id="6080" version="N"
+
+compatible: "microchip,wdt-g2-wdt"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true

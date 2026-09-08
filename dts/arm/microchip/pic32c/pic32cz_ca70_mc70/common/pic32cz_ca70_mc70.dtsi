@@ -206,6 +206,26 @@
 			};
 		};
 
+		wdt: watchdog@400e1850 {
+			compatible = "microchip,wdt-g2-wdt";
+			reg = <0x400e1850 0xc>;
+			interrupts = <4 0>;
+			interrupt-names = "wdt";
+			clocks = <&pmc CLOCK_MCHP_WDT>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		rswdt: watchdog@400e1900 {
+			compatible = "microchip,rswdt-g1-wdt";
+			reg = <0x400e1900 0xc>;
+			interrupts = <63 0>;
+			interrupt-names = "rswdt";
+			clocks = <&pmc 0>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		uart2: uart@400e1a00 {
 			compatible = "microchip,uart-g2-uart";
 			reg = <0x400e1a00 0xe8>;
