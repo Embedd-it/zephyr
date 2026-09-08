@@ -1,0 +1,26 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	zephyr,user {
+		io-channels = <&dacc 0>;
+		io-channel-names = "dac1";
+	};
+};
+
+/* Connect VDD to J302.1 (Vrefin) */
+&dacc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-0 = <&ext2_header_dac0>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	dacc0: channel@0 {
+		reg = <0>;
+		zephyr,resolution = <12>;
+	};
+};
