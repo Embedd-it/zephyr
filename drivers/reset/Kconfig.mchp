@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config RESET_MCHP_RSTC_G1
@@ -7,3 +7,10 @@ config RESET_MCHP_RSTC_G1
 	depends on DT_HAS_MICROCHIP_RSTC_G1_RESET_ENABLED
 	help
 	  Enable RESET driver for Microchip G1.
+
+config RESET_MCHP_RSTC_G2
+	bool "Microchip RSTC G2 reset driver"
+	default y
+	depends on DT_HAS_MICROCHIP_RSTC_G2_RESET_ENABLED
+	help
+	  Enable RESET driver for Microchip G2.
