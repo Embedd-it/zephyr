@@ -1,4 +1,5 @@
 # Copyright (c) 2025-2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config ADC_MCHP_G1
@@ -35,3 +36,20 @@ config ADC_MCHP_G2_CORE_INIT_PRIORITY
 	  The ADC core driver must be initialized before ADC (global) device.
 
 endif # ADC_MCHP_ADC_G2
+
+config ADC_MCHP_AFEC_G1
+	bool "Microchip ADC Driver"
+	default y
+	depends on DT_HAS_MICROCHIP_AFEC_G1_ADC_ENABLED
+	select PINCTRL
+	help
+	  Enable Microchip MCU Family Analog-to-Digital Converter (ADC) driver
+	  based on AFEC module.
+
+config ADC_MCHP_AFEC_G1_ENABLE_DMA
+	bool "DMA for adc driver"
+	depends on ADC_MCHP_AFEC_G1
+	depends on DMA
+	default y
+	help
+	  Enable the AFEC DMA driver.
