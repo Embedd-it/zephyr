@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: Copyright (c) 2021-2023 Gerson Fernando Budke <nandojve@gmail.com>
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip GMAC g2 driver
+
+description: |
+  Microchip GMAC g2 driver
+  The supported devices :
+    - module name="GMAC" id="11046" version="S"
+
+compatible: "microchip,gmac-g2-eth"
+
+include:
+  - name: ethernet-controller.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  phy-handle:
+    required: true
+
+  num-queues:
+    type: int
+    required: true
+    description: |
+      Number of hardware TX and RX queues.
+
+  phy-connection-type:
+    default: "rmii"
+
+  ref-clk-source:
+    type: string
+    default: "internal"
+    description: |
+      Specifies the source for the ethernet MAC reference clock.
+    enum:
+      - "internal"
+      - "external"

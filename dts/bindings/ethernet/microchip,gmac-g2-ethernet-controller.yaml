@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip GMAC family Ethernet Controller
+
+description: |
+  Contains the Ethernet MAC and the MDIO as child nodes.
+  The supported devices :
+    - module name="GMAC" id="11046" version="S"
+
+compatible: "microchip,gmac-g2-ethernet-controller"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true

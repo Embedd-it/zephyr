@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2021 IP-Logix Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip GMAC/MDIO g2 driver
+
+description: |
+  Microchip GMAC/MDIO g2 driver
+  The supported devices :
+    - module name="GMAC" id="11046" version="S"
+
+compatible: "microchip,gmac-g2-mdio"
+
+include:
+  - name: mdio-controller.yaml
+  - name: pinctrl-device.yaml

@@ -79,6 +79,30 @@
 			status = "disabled";
 		};
 
+		ethernet@40050000 {
+			compatible = "microchip,gmac-g2-ethernet-controller";
+			reg = <0x40050000 0x7c0>;
+			clocks = <&pmc CLOCK_MCHP_GMAC>;
+			clock-names = "mclk";
+
+			gmac: gmac0: ethernet {
+				compatible = "microchip,gmac-g2-eth";
+				interrupts = <39 0>, <66 0>, <67 0>, <71 0>, <72 0>, <73 0>;
+				interrupt-names = "gmac", "gmac_q1", "gmac_q2",
+						  "gmac_q3", "gmac_q4", "gmac_q5";
+				num-queues = <6>;
+				local-mac-address = [00 00 00 00 00 00];
+				status = "disabled";
+			};
+
+			gmac_mdio: gmac0_mdio: mdio {
+				compatible = "microchip,gmac-g2-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				status = "disabled";
+			};
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;
