@@ -55,6 +55,10 @@
 	status = "okay";
 };
 
+zephyr_udc0: &usbhs {
+	status = "okay";
+};
+
 &cpu0 {
 	clock-frequency = <300000000>;
 };

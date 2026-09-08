@@ -17,4 +17,5 @@ supported:
   - pinctrl
   - reset
   - uart
+  - usbd
 vendor: microchip
