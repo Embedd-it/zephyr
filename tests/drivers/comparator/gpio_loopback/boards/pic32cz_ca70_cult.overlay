@@ -1,0 +1,31 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * AFE0_AD0 (ext2 header A0, PD30) looped back to PD17 (ext2 header, free GPIO)
+ */
+
+/ {
+	aliases {
+		test-comp = &acc;
+	};
+
+	zephyr,user {
+		test-gpios = <&piod 17 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&piod {
+	status = "okay";
+};
+
+&acc {
+	selplus = "afe0-ad0";
+	selminus = "ts";
+
+	pinctrl-0 = <&ext2_header_afec0_ad0>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
