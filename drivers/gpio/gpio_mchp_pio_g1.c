@@ -35,6 +35,15 @@ struct gpio_mchp_pio_config {
 
 	/* Divider applied to the slow clock for debounce filtering */
 	uint32_t slow_clock_divider;
+
+	/* Clock driver */
+	const struct device *clock;
+
+	/* Main clock subsystem. */
+	clock_control_subsys_t clock_subsys;
+
+	/* Interrupt configuration function */
+	void (*irq_config)(const struct device *dev);
 };
 
 struct gpio_mchp_pio_data {
@@ -382,17 +391,55 @@ static DEVICE_API(gpio, gpio_mchp_pio_driver_api) = {
 #endif /* CONFIG_GPIO_GET_DIRECTION */
 };
 
+static void gpio_mchp_pio_isr(const struct device *dev)
+{
+	const struct gpio_mchp_pio_config *dev_config = dev->config;
+	pio_registers_t *const regs = dev_config->regs;
+	struct gpio_mchp_pio_data *dev_data = dev->data;
+	uint32_t int_stat = 0u;
+
+	/* ISR bits are set on input level or edge changes, regardless of whether an interrupt is
+	 * actually enabled on that line. Therefore, we check whether an interrupt is actually
+	 * enabled by masking with IMR. If we didn't do this, some other enabled interrupt firing
+	 * could also result in a callback for a disabled interrupt.
+	 */
+	int_stat = regs->PIO_ISR & regs->PIO_IMR;
+
+	gpio_fire_callbacks(&dev_data->event_callbacks, dev, int_stat);
+}
+
 static int gpio_mchp_pio_init(const struct device *dev)
 {
 	const struct gpio_mchp_pio_config *dev_config = dev->config;
 	pio_registers_t *const regs = dev_config->regs;
+	int ret = 0;
+
+	/* The clock is not ready yet */
+	if (!device_is_ready(dev_config->clock)) {
+		return -ENODEV;
+	}
+
+	/* Enable GPIO clock in PMC. This is necessary to enable interrupts */
+	ret = clock_control_on(dev_config->clock, dev_config->clock_subsys);
+	if (ret != 0) {
+		return ret;
+	}
 
 	regs->PIO_SCDR = dev_config->slow_clock_divider;
+
+	dev_config->irq_config(dev);
 
 	return 0;
 }
 
 #define DRIVER_INSTANCE_DEFINITION(n)                                                              \
+                                                                                                   \
+	static void irq_config_##n(const struct device *dev)                                       \
+	{                                                                                          \
+		IRQ_CONNECT(DT_INST_IRQN(n), DT_INST_IRQ(n, priority), gpio_mchp_pio_isr,          \
+			    DEVICE_DT_INST_GET(n), 0u);                                            \
+		irq_enable(DT_INST_IRQN(n));                                                       \
+	}                                                                                          \
                                                                                                    \
 	static const struct gpio_mchp_pio_config mchp_gpio_##n##_config = {                        \
 		.common =                                                                          \
@@ -401,6 +448,9 @@ static int gpio_mchp_pio_init(const struct device *dev)
 			},                                                                         \
 		.regs = (pio_registers_t *)DT_INST_REG_ADDR(n),                                    \
 		.slow_clock_divider = DT_INST_PROP(n, slow_clock_divider),                         \
+		.clock = DEVICE_DT_GET(DT_INST_PHANDLE(n, clocks)),                                \
+		.clock_subsys = (clock_control_subsys_t)DT_INST_CLOCKS_CELL(n, subsystem),         \
+		.irq_config = irq_config_##n,                                                      \
 	};                                                                                         \
                                                                                                    \
 	static struct gpio_mchp_pio_data mchp_gpio_##n##_data = {};                                \
