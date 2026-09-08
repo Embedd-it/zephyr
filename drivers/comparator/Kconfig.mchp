@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config COMPARATOR_MCHP_AC_G1
@@ -9,3 +9,12 @@ config COMPARATOR_MCHP_AC_G1
 	help
 	  Enable support for the Microchip Comparator driver
 	  on G1 AC peripherals.
+
+config COMPARATOR_MCHP_ACC_G1
+	bool "Microchip Comparator Driver for ACC G1 Peripherals"
+	default y
+	depends on DT_HAS_MICROCHIP_ACC_G1_COMPARATOR_ENABLED
+	select PINCTRL
+	help
+	  Enable support for the Microchip Comparator driver
+	  on G1 ACC peripherals.
