@@ -10,3 +10,12 @@ config CAN_MCHP_MCAN_G1
 	select PINCTRL
 	help
 	  Enable the Microchip M_CAN G1 CAN FD front end.
+
+config CAN_MCHP_CAN_G2
+	bool "Microchip g2 CAN driver"
+	default y
+	depends on DT_HAS_MICROCHIP_CAN_G2_CAN_ENABLED
+	select CAN_MCAN
+	select PINCTRL
+	help
+	  This option enables CAN driver for group (g2) of CAN peripherals.
