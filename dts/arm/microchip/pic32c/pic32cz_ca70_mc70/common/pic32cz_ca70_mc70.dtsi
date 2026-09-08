@@ -173,6 +173,10 @@
 			pioa: gpio@400e0e00 {
 				compatible = "microchip,pio-g1-gpio";
 				reg = <0x400e0e00 0x168>;
+				interrupts = <10 1>;
+				interrupt-names = "pioa";
+				clocks = <&pmc CLOCK_MCHP_PIOA>;
+				clock-names = "mclk";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
@@ -180,6 +184,10 @@
 			piob: gpio@400e1000 {
 				compatible = "microchip,pio-g1-gpio";
 				reg = <0x400e1000 0x168>;
+				interrupts = <11 1>;
+				interrupt-names = "piob";
+				clocks = <&pmc CLOCK_MCHP_PIOB>;
+				clock-names = "mclk";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
@@ -187,6 +195,10 @@
 			pioc: gpio@400e1200 {
 				compatible = "microchip,pio-g1-gpio";
 				reg = <0x400e1200 0x168>;
+				interrupts = <12 1>;
+				interrupt-names = "pioc";
+				clocks = <&pmc CLOCK_MCHP_PIOC>;
+				clock-names = "mclk";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
@@ -194,6 +206,10 @@
 			piod: gpio@400e1400 {
 				compatible = "microchip,pio-g1-gpio";
 				reg = <0x400e1400 0x168>;
+				interrupts = <16 1>;
+				interrupt-names = "piod";
+				clocks = <&pmc CLOCK_MCHP_PIOD>;
+				clock-names = "mclk";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
@@ -201,6 +217,10 @@
 			pioe: gpio@400e1600 {
 				compatible = "microchip,pio-g1-gpio";
 				reg = <0x400e1600 0x168>;
+				interrupts = <17 1>;
+				interrupt-names = "pioe";
+				clocks = <&pmc CLOCK_MCHP_PIOE>;
+				clock-names = "mclk";
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
