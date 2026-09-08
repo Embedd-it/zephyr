@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025-2026 Microchip Technology Inc.
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -29,5 +29,8 @@
 #ifdef CONFIG_FLASH_MCHP_NVMCTRL_G3
 #include "mchp_nvmctrl_g3.h"
 #endif /* CONFIG_FLASH_MCHP_NVMCTRL_G3 */
+#ifdef CONFIG_SOC_FLASH_MCHP_EEFC_G1
+#include "mchp_eefc_g1.h"
+#endif /* CONFIG_SOC_FLASH_MCHP_EEFC_G1 */
 
 #endif /* ZEPHYR_INCLUDE_DRIVERS_FLASH_MCHP_FLASH_H_ */
