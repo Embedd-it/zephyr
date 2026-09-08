@@ -5,3 +5,19 @@
  */
 
 #include <microchip/pic32c/pic32cz_ca70_mc70/common/pic32cz_ca70_mc70_100.dtsi>
+
+/ {
+	soc {
+		i2sc1: i2s1: i2sc1@40090000 {
+			compatible = "microchip,i2sc-g1-i2s";
+			reg = <0x40090000 0x28>;
+			interrupts = <70 0>;
+			interrupt-names = "i2sc1";
+			clocks = <&pmc CLOCK_MCHP_GCLK_I2SC1>;
+			clock-names = "gclk";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+	};
+};
