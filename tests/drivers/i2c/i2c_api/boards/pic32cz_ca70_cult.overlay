@@ -1,0 +1,17 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	aliases {
+		i2c-0 = &twihs0;
+	};
+};
+
+&twihs0 {
+	pinctrl-0 = <&mikrobus_header_i2c>;
+	pinctrl-names = "default";
+	status = "okay";
+};

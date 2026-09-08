@@ -1,0 +1,46 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/delete-node/ &eeprom0;
+
+&pinctrl {
+	ext_header_i2c2: ext_header_i2c2 {
+		group1 {
+			pinmux = <PD27C_TWD2>,
+				 <PD28C_TWCK2>;
+		};
+	};
+};
+
+&twihs2 {
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+	pinctrl-0 = <&ext_header_i2c2>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	eeprom0: eeprom@54 {
+		compatible = "zephyr,i2c-target-eeprom";
+		reg = <0x54>;
+		address-width = <16>;
+		size = <1024>;
+	};
+};
+
+/** NOTE: TWIHS0 is connected to the onboard AT24MAC402, which provides EEPROM at address 0x56
+ *       and SERIAL at 0x5E.
+ *       The eeprom@52 definition below is required only for the build and is not used at runtime.
+ */
+&twihs0 {
+	pinctrl-0 = <&ext1_header_i2c0>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	eeprom1: eeprom@52 {
+		compatible = "zephyr,i2c-target-eeprom";
+		reg = <0x52>;
+		size = <256>;
+	};
+};
