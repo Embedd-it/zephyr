@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+config UHC_MCHP_USBHS_G2
+	bool "Microchip USBHS g2 driver"
+	default y
+	depends on DT_HAS_MICROCHIP_USBHS_G2_UHC_ENABLED && !SOC_PIC32CZ2051CA70064
+	select EVENTS
+	help
+	  This option enables the Microchip USBHS USB Host Controller driver
+	  for the PIC32CZ CA70 family USBHS Peripheral.
+
+	  The driver support High-Speed (480 Mbps) and Full-Speed (12 Mbps)
+	  operation. The peripheral does not work on the 64-pin TFQ package devices
+	  (see the PIC32CZ CA70/MC70 Family Silicon Errata and Data Sheet
+	   Clarifications, section 2.3)
+
+if UHC_MCHP_USBHS_G2
+
+config UHC_MCHP_USBHS_G2_THREAD_STACK_SIZE
+	int "Driver internal thread stack size"
+	default 512
+	help
+	  Size of the stack used in the driver.
+
+config UHC_MCHP_USBHS_G2_THREAD_PRIORITY
+	int "UHC controller driver thread priority"
+	default 8
+	help
+	  Host controller driver thread priority.
+
+config UHC_MCHP_USBHS_G2_DMA
+	bool "Hardware DMA for data endpoints"
+	default y
+	help
+	  Use the USBHS peripheral's built-in DMA channels to move IN/OUT
+	  data instead of the CPU byte-copy loop. The peripheral has 7 DMA
+	  channels hard-wired one-to-one to hardware endpoints 1..7; EP0 and
+	  any configured endpoint beyond hardware endpoint 7 always use the
+	  CPU-copy path regardless of this option.
+
+endif # UHC_MCHP_USBHS_G2
