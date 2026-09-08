@@ -38,6 +38,10 @@
 	status = "okay";
 };
 
+&chipid {
+	status = "okay";
+};
+
 &uart1 {
 	current-speed = <115200>;
 
