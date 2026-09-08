@@ -1,0 +1,14 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	resources {
+		compatible = "test-gpio-basic-api";
+		out-gpios = <&piod 10 0>;
+		in-gpios = <&pioa 23 0>;
+		status = "okay";
+	};
+};
