@@ -5,3 +5,40 @@
  */
 
 #include <dt-bindings/pic32c/pic32cz_ca/pic32cz_ca70/pic32cz2051ca70144-pinctrl.h>
+
+&pinctrl {
+	uart1_default: uart1_default {
+		group1 {
+			pinmux = <PA05C_UART1_RXD>,
+				 <PA06C_UART1_TXD>;
+		};
+	};
+
+	uart2_default: uart2_default {
+		group1 {
+			pinmux = <PD25C_UART2_RXD>,
+				 <PD26C_UART2_TXD>;
+		};
+	};
+
+	uart3_default: uart3_default {
+		group1 {
+			pinmux = <PD28A_UART3_RXD>,
+				 <PD30A_UART3_TXD>;
+		};
+	};
+
+	uart4_default: uart4_default {
+		group1 {
+			pinmux = <PD18C_UART4_RXD>,
+				 <PD19C_UART4_TXD>;
+		};
+	};
+
+	usart0_default: usart0_default {
+		group1 {
+			pinmux = <PB01C_USART0_TXD>,
+				 <PB00C_USART0_RXD>;
+		};
+	};
+};
