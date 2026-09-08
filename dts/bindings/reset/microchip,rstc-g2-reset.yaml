@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip RSTC G2 Reset driver
+
+description: |
+  Microchip RSTC driver.
+
+  Group g2 RSTC driver supports following hardware peripherals:
+    - module name="RSTC" id="11009" version="J"
+
+include: base.yaml
+
+compatible: "microchip,rstc-g2-reset"
+
+properties:
+  reg:
+    required: true
+    description: |
+      Base address and size of the RSTC register block.
+
+  erstl:
+    type: int
+    default: 1
+    min: 1
+    max: 15
+    description: |
+      The duration of a reset pulse is configured as 1^(erstl+1) SLOW_CLK ticks.
+
+  user-reset:
+    type: boolean
+    description: |
+      Whether a low level on the NRST pin generates a user reset.
