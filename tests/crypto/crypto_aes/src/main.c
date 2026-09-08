@@ -17,6 +17,8 @@
 #define CRYPTO_DEV_COMPAT espressif_esp32_aes
 #elif CONFIG_CRYPTO_MCHP_AES_G1
 #define CRYPTO_DEV_COMPAT microchip_aes_g1
+#elif CONFIG_CRYPTO_MCHP_AES_G2
+#define CRYPTO_DEV_COMPAT microchip_aes_g2_crypto
 #elif DT_HAS_COMPAT_STATUS_OKAY(sifli_sf32lb_crypto)
 #define CRYPTO_DEV_COMPAT sifli_sf32lb_crypto
 #elif DT_HAS_COMPAT_STATUS_OKAY(st_stm32_aes)
@@ -133,6 +135,32 @@ static uint8_t gcm_ciphertext[58] = {
 	0xd3, 0x75, 0x22, 0x74, 0xd3, 0xa0, 0x19, 0xfb, 0xca, 0xed, 0x09, 0xa4, 0x25, 0xcd, 0x9b,
 	0x2e, 0x1c, 0x9b, 0x72, 0xee, 0xe7, 0xc9, 0xde, 0x7d, 0x52, 0xb3, 0xf3, 0xd6, 0xa5, 0x28,
 	0x4f, 0x4a, 0x6d, 0x3f, 0xe2, 0x2a, 0x5d, 0x6c, 0x2b, 0x96, 0x04, 0x94, 0xc3};
+
+/* CFB Mode Test Vectors - Single block (16 bytes, no padding) */
+static uint8_t cfb_key[16] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
+			      0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
+
+static uint8_t cfb_iv[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+			     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+static uint8_t cfb_plaintext[16] = {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+				    0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a};
+
+static uint8_t cfb_ciphertext[16] = {0x3b, 0x3f, 0xd9, 0x2e, 0xb7, 0x2d, 0xad, 0x20,
+				     0x33, 0x34, 0x49, 0xf8, 0xe8, 0x3c, 0xfb, 0x4a};
+
+/* OFB Mode Test Vectors - Single block (16 bytes, no padding) */
+static uint8_t ofb_key[16] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
+			      0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
+
+static uint8_t ofb_iv[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+			     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+static uint8_t ofb_plaintext[16] = {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+				    0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a};
+
+static uint8_t ofb_ciphertext[16] = {0x3b, 0x3f, 0xd9, 0x2e, 0xb7, 0x2d, 0xad, 0x20,
+				     0x33, 0x34, 0x49, 0xf8, 0xe8, 0x3c, 0xfb, 0x4a};
 
 static inline const struct device *get_crypto_dev(void)
 {
@@ -476,8 +504,7 @@ ZTEST(crypto_aes, test_ctr_encrypt_partial)
 	cipher_free_session(crypto_dev, &ctx);
 
 	zassert_equal(pkt.out_len, partial_len, "CTR partial out_len mismatch");
-	zassert_mem_equal(encrypted, ctr_ciphertext, partial_len,
-			  "CTR dropped partial tail");
+	zassert_mem_equal(encrypted, ctr_ciphertext, partial_len, "CTR dropped partial tail");
 }
 
 /* CCM Mode Tests */
@@ -496,10 +523,8 @@ ZTEST(crypto_aes, test_ccm_encrypt)
 	struct cipher_ctx ctx = {
 		.keylen = sizeof(ccm_key),
 		.key.bit_stream = ccm_key,
-		.mode_params.ccm_info = {
-			.nonce_len = sizeof(ccm_nonce),
-			.tag_len = 8,
-		},
+		.mode_params.ccm_info.nonce_len = sizeof(ccm_nonce),
+		.mode_params.ccm_info.tag_len = 8,
 		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
 	};
 
@@ -551,10 +576,8 @@ ZTEST(crypto_aes, test_ccm_decrypt)
 	struct cipher_ctx ctx = {
 		.keylen = sizeof(ccm_key),
 		.key.bit_stream = ccm_key,
-		.mode_params.ccm_info = {
-			.nonce_len = sizeof(ccm_nonce),
-			.tag_len = 8,
-		},
+		.mode_params.ccm_info.nonce_len = sizeof(ccm_nonce),
+		.mode_params.ccm_info.tag_len = 8,
 		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
 	};
 
@@ -608,10 +631,8 @@ ZTEST(crypto_aes, test_gcm_encrypt)
 	struct cipher_ctx ctx = {
 		.keylen = sizeof(gcm_key),
 		.key.bit_stream = gcm_key,
-		.mode_params.gcm_info = {
-			.nonce_len = sizeof(gcm_nonce),
-			.tag_len = 16,
-		},
+		.mode_params.gcm_info.nonce_len = sizeof(gcm_nonce),
+		.mode_params.gcm_info.tag_len = 16,
 		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
 	};
 
@@ -663,10 +684,8 @@ ZTEST(crypto_aes, test_gcm_decrypt)
 	struct cipher_ctx ctx = {
 		.keylen = sizeof(gcm_key),
 		.key.bit_stream = gcm_key,
-		.mode_params.gcm_info = {
-			.nonce_len = sizeof(gcm_nonce),
-			.tag_len = 16,
-		},
+		.mode_params.gcm_info.nonce_len = sizeof(gcm_nonce),
+		.mode_params.gcm_info.tag_len = 16,
 		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
 	};
 
@@ -701,6 +720,178 @@ ZTEST(crypto_aes, test_gcm_decrypt)
 	rc = memcmp(decrypted, gcm_plaintext, sizeof(gcm_plaintext));
 	cipher_free_session(crypto_dev, &ctx);
 	zassert_equal(rc, 0, "GCM decrypt output mismatch");
+}
+
+/* CFB Mode Tests */
+ZTEST(crypto_aes, test_cfb_encrypt)
+{
+	uint8_t encrypted[BUFFER_PAD(32)] __aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t plaintext_buf[BUFFER_PAD(sizeof(cfb_plaintext))]
+		__aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t iv_copy[16];
+
+	memcpy(iv_copy, cfb_iv, sizeof(cfb_iv));
+	memcpy(plaintext_buf, cfb_plaintext, sizeof(cfb_plaintext));
+
+	struct cipher_ctx ctx = {
+		.keylen = sizeof(cfb_key),
+		.key.bit_stream = cfb_key,
+		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
+	};
+
+	struct cipher_pkt pkt = {
+		.in_buf = plaintext_buf,
+		.in_len = sizeof(cfb_plaintext),
+		.out_buf_max = sizeof(encrypted),
+		.out_buf = encrypted,
+	};
+
+	int rc = cipher_begin_session(crypto_dev, &ctx, CRYPTO_CIPHER_ALGO_AES,
+				      CRYPTO_CIPHER_MODE_CFB, CRYPTO_CIPHER_OP_ENCRYPT);
+
+	if (rc == -ENOTSUP) {
+		ztest_test_skip();
+		return;
+	}
+
+	rc = cipher_cfb_op(&ctx, &pkt, iv_copy);
+	if (rc != 0) {
+		cipher_free_session(crypto_dev, &ctx);
+		zassert_equal(rc, 0, "CFB encrypt failed (rc=%d)", rc);
+		return;
+	}
+
+	rc = memcmp(encrypted, cfb_ciphertext, sizeof(cfb_ciphertext));
+	cipher_free_session(crypto_dev, &ctx);
+	zassert_equal(rc, 0, "CFB encrypt output mismatch");
+}
+
+ZTEST(crypto_aes, test_cfb_decrypt)
+{
+	uint8_t decrypted[BUFFER_PAD(16)] __aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t ciphertext_buf[BUFFER_PAD(sizeof(cfb_ciphertext))]
+		__aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t iv_copy[16];
+
+	memcpy(iv_copy, cfb_iv, sizeof(cfb_iv));
+	memcpy(ciphertext_buf, cfb_ciphertext, sizeof(cfb_ciphertext));
+
+	struct cipher_ctx ctx = {
+		.keylen = sizeof(cfb_key),
+		.key.bit_stream = cfb_key,
+		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
+	};
+	struct cipher_pkt pkt = {
+		.in_buf = ciphertext_buf,
+		.in_len = sizeof(cfb_ciphertext),
+		.out_buf_max = sizeof(decrypted),
+		.out_buf = decrypted,
+	};
+
+	int rc = cipher_begin_session(crypto_dev, &ctx, CRYPTO_CIPHER_ALGO_AES,
+				      CRYPTO_CIPHER_MODE_CFB, CRYPTO_CIPHER_OP_DECRYPT);
+
+	if (rc == -ENOTSUP) {
+		ztest_test_skip();
+		return;
+	}
+
+	rc = cipher_cfb_op(&ctx, &pkt, iv_copy);
+	if (rc != 0) {
+		cipher_free_session(crypto_dev, &ctx);
+		zassert_equal(rc, 0, "CFB decrypt failed (rc=%d)", rc);
+		return;
+	}
+
+	rc = memcmp(decrypted, cfb_plaintext, sizeof(cfb_plaintext));
+	cipher_free_session(crypto_dev, &ctx);
+	zassert_equal(rc, 0, "CFB decrypt output mismatch");
+}
+
+/* OFB Mode Tests */
+ZTEST(crypto_aes, test_ofb_encrypt)
+{
+	uint8_t encrypted[BUFFER_PAD(32)] __aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t plaintext_buf[BUFFER_PAD(sizeof(ofb_plaintext))]
+		__aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t iv_copy[16];
+
+	memcpy(iv_copy, ofb_iv, sizeof(ofb_iv));
+	memcpy(plaintext_buf, ofb_plaintext, sizeof(ofb_plaintext));
+
+	struct cipher_ctx ctx = {
+		.keylen = sizeof(ofb_key),
+		.key.bit_stream = ofb_key,
+		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
+	};
+
+	struct cipher_pkt pkt = {
+		.in_buf = plaintext_buf,
+		.in_len = sizeof(ofb_plaintext),
+		.out_buf_max = sizeof(encrypted),
+		.out_buf = encrypted,
+	};
+
+	int rc = cipher_begin_session(crypto_dev, &ctx, CRYPTO_CIPHER_ALGO_AES,
+				      CRYPTO_CIPHER_MODE_OFB, CRYPTO_CIPHER_OP_ENCRYPT);
+
+	if (rc == -ENOTSUP) {
+		ztest_test_skip();
+		return;
+	}
+
+	rc = cipher_ofb_op(&ctx, &pkt, iv_copy);
+	if (rc != 0) {
+		cipher_free_session(crypto_dev, &ctx);
+		zassert_equal(rc, 0, "OFB encrypt failed (rc=%d)", rc);
+		return;
+	}
+
+	rc = memcmp(encrypted, ofb_ciphertext, sizeof(ofb_ciphertext));
+	cipher_free_session(crypto_dev, &ctx);
+	zassert_equal(rc, 0, "OFB encrypt output mismatch");
+}
+
+ZTEST(crypto_aes, test_ofb_decrypt)
+{
+	uint8_t decrypted[BUFFER_PAD(16)] __aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t ciphertext_buf[BUFFER_PAD(sizeof(ofb_ciphertext))]
+		__aligned(IO_ALIGNMENT_BYTES) = {0};
+	uint8_t iv_copy[16];
+
+	memcpy(iv_copy, ofb_iv, sizeof(ofb_iv));
+	memcpy(ciphertext_buf, ofb_ciphertext, sizeof(ofb_ciphertext));
+
+	struct cipher_ctx ctx = {
+		.keylen = sizeof(ofb_key),
+		.key.bit_stream = ofb_key,
+		.flags = CAP_RAW_KEY | CAP_SYNC_OPS | CAP_SEPARATE_IO_BUFS,
+	};
+	struct cipher_pkt pkt = {
+		.in_buf = ciphertext_buf,
+		.in_len = sizeof(ofb_ciphertext),
+		.out_buf_max = sizeof(decrypted),
+		.out_buf = decrypted,
+	};
+
+	int rc = cipher_begin_session(crypto_dev, &ctx, CRYPTO_CIPHER_ALGO_AES,
+				      CRYPTO_CIPHER_MODE_OFB, CRYPTO_CIPHER_OP_DECRYPT);
+
+	if (rc == -ENOTSUP) {
+		ztest_test_skip();
+		return;
+	}
+
+	rc = cipher_ofb_op(&ctx, &pkt, iv_copy);
+	if (rc != 0) {
+		cipher_free_session(crypto_dev, &ctx);
+		zassert_equal(rc, 0, "OFB decrypt failed (rc=%d)", rc);
+		return;
+	}
+
+	rc = memcmp(decrypted, ofb_plaintext, sizeof(ofb_plaintext));
+	cipher_free_session(crypto_dev, &ctx);
+	zassert_equal(rc, 0, "OFB decrypt output mismatch");
 }
 
 ZTEST_SUITE(crypto_aes, NULL, crypto_aes_setup, crypto_aes_before, NULL, NULL);

@@ -30,4 +30,5 @@ tests:
       - kit_pse84_eval/pse846gps2dbzc4a/m55
       - kit_pse84_ai/pse846gps2dbzc4a/m33
       - kit_pse84_ai/pse846gps2dbzc4a/m55
+      - pic32cz_ca70_cult
     tags: crypto
