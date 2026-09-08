@@ -5,3 +5,19 @@
  */
 
 #include <microchip/pic32c/pic32cz_ca70_mc70/common/pic32cz_ca70_mc70_100.dtsi>
+
+/ {
+	soc {
+		spi1: spi@40058000 {
+			compatible = "microchip,spi-g1";
+			reg = <0x40058000 0xec>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			interrupts = <42 0>;
+			interrupt-names = "spi1";
+			clocks = <&pmc CLOCK_MCHP_SPI1>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+	};
+};

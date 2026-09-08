@@ -8,6 +8,18 @@
 
 / {
 	soc {
+		spi0: spi@40008000 {
+			compatible = "microchip,spi-g1";
+			reg = <0x40008000 0xec>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			interrupts = <21 0>;
+			interrupt-names = "spi0";
+			clocks = <&pmc CLOCK_MCHP_SPI0>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		usart2: usart@4002c000 {
 			compatible = "microchip,usart-g1-uart";
 			reg = <0x4002c000 0xec>;
