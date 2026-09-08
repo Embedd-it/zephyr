@@ -7,6 +7,13 @@
 #include <dt-bindings/pic32c/pic32cz_ca/pic32cz_ca70/pic32cz2051ca70144-pinctrl.h>
 
 &pinctrl {
+	tc3_ch2_default: tc3_ch2_default {
+		group1 {
+			pinmux = <PD21C_TIOA11>,
+				 <PD22C_TIOB11>;
+		};
+	};
+
 	uart1_default: uart1_default {
 		group1 {
 			pinmux = <PA05C_UART1_RXD>,

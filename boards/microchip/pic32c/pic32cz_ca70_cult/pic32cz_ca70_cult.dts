@@ -25,6 +25,7 @@
 		led0 = &led0;
 		sw0 = &button0;
 		sw1 = &button1;
+		counter = &tc0_ch0;
 	};
 
 	leds {
