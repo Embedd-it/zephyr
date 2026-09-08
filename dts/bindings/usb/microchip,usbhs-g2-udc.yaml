@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: Copyright (c) 2018 Aurelien Jarno
+# SPDX-FileCopyrightText: Copyright (c) 2026 Gerson Fernando Budke <nandojve@gmail.com>
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip USBHS g2 device driver
+
+description: |
+    PIC32CZ CA70 Family USB (USBHS) in device mode
+
+    The USBHS controller has two memory regions:
+    - "core": USBHS register block
+    - "fifo": Dual-Port RAM (DPRAM) for endpoint FIFOs
+
+    The USBHS has 10 hardware endpoints (EP0-EP9). Each hardware endpoint has
+    a single configuration register, so it cannot be used as both IN and OUT
+    at the same time. The endpoints beyond EP0 are therefore split into a
+    fixed IN block followed by a fixed OUT block, sized by num-in-endpoints
+    and num-out-endpoints.
+
+    Only one between device and host may be enabled at the same time.
+
+    Group g2 USBHS driver supports following hardware peripherals:
+      - module name="USBHS" id="11292" version="G"
+
+compatible: "microchip,usbhs-g2-udc"
+
+include:
+  - name: usb-ep.yaml
+
+properties:
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  maximum-speed:
+    default: "high-speed"
+
+  reg:
+    required: true
+    description: |
+      Register regions for the USBHS controller.
+      Contain two entries in order:
+        - core registers
+        - fifo DPRAM
+
+  reg-names:
+    required: true
+    description: |
+      Names for the register regions. Must be "core" and "fifo".
+
+  num-in-endpoints:
+    required: true
+    description: |
+      Number of IN endpoints including EP0 IN. These occupy hardware
+      endpoints 0 through (num-in-endpoints - 1).
+
+  num-out-endpoints:
+    required: true
+    description: |
+      Number of OUT endpoints including EP0 OUT. These occupy hardware
+      endpoint 0 and the endpoints immediately following the IN block,
+      i.e. num-in-endpoints through (num-in-endpoints + num-out-endpoints - 2).
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    usbhs: usb@40038000 {
+      compatible = "microchip,usbhs-g2-udc";
+      reg = <0x40038000 0x4000>, <0xa0100000 0x50000>;
+      reg-names = "core", "fifo";
+      interrupts = <34 0>;
+      interrupt-names = "usbhs";
+      clocks = <&pmc CLOCK_MCHP_USBHS>;
+      clock-names = "mclk";
+      num-bidir-endpoints = <1>;
+      num-in-endpoints = <6>;
+      num-out-endpoints = <5>;
+      status = "disabled";
+    };
