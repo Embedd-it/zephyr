@@ -1,0 +1,14 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&tc0_ch0 {
+	clk = "timer_clock1";
+	status = "okay";
+};
+
+&pck6 {
+	prescaler = <4>;
+};

@@ -205,8 +205,14 @@ static const struct device *const devices[] = {
 #ifdef CONFIG_COUNTER_MCHP_TC_G1
 	DEVS_FOR_DT_COMPAT(microchip_tc_g1_counter)
 #endif
+#ifdef CONFIG_COUNTER_MCHP_TC_G3
+	DEVS_FOR_DT_COMPAT(microchip_tc_g3_counter)
+#endif
 #ifdef CONFIG_COUNTER_MCHP_RTC_G1
 	DEVS_FOR_DT_COMPAT(microchip_rtc_g1_counter)
+#endif
+#ifdef CONFIG_COUNTER_MCHP_RTC_G2
+	DEVS_FOR_DT_COMPAT(microchip_rtc_g2_counter)
 #endif
 #ifdef CONFIG_COUNTER_RENESAS_RZA2M_OSTM
 	DEVS_FOR_DT_COMPAT(renesas_rza2m_ostm_counter)
@@ -252,6 +258,9 @@ static const struct device *const period_devs[] = {
 #endif
 #ifdef CONFIG_COUNTER_RTC_MAX32
 	DEVS_FOR_DT_COMPAT(adi_max32_rtc_counter)
+#endif
+#ifdef CONFIG_COUNTER_MCHP_RTC_G2
+	DEVS_FOR_DT_COMPAT(microchip_rtc_g2_counter)
 #endif
 };
 
@@ -1492,6 +1501,14 @@ static void *counter_setup(void)
 			     "Device %s is not ready", devices[i]->name);
 		k_object_access_grant(devices[i], k_current_get());
 	}
+
+#if defined(CONFIG_COUNTER_MCHP_RTC_G2)
+	/* This RTC-backed counter reports -ENODATA until its calendar has
+	 * been written at least once; seed it so the rest of the suite can
+	 * proceed.
+	 */
+	(void)counter_set_value(DEVICE_DT_GET(DT_INST(0, microchip_rtc_g2_counter)), 1700000000);
+#endif
 
 	return NULL;
 }

@@ -1,0 +1,30 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Requires a wire loopback between PD20 and PD21
+ */
+
+/ {
+	zephyr,user {
+		capture-tester-gpios = <&piod 20 GPIO_ACTIVE_HIGH>;
+	};
+
+	counter_loopback_0: counter_loopback {
+		compatible = "test-counter-capture";
+		/* index order must match the order of the capture-tester-gpios for loopback */
+		test-counter-captures = <&tc3_ch2 0 0>;
+	};
+};
+
+&tc3_ch2 {
+	clk = "timer_clock1";
+
+	pinctrl-0 = <&tc3_ch2_default>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
