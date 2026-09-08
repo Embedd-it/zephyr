@@ -33,5 +33,5 @@
 };
 
 &cpu0 {
-	clock-frequency = <12000000>;
+	clock-frequency = <300000000>;
 };

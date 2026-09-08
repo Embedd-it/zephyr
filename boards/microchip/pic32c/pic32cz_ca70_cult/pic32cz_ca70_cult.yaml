@@ -12,4 +12,5 @@ ram: 512
 supported:
   - gpio
   - pinctrl
+  - clock_control
 vendor: microchip
