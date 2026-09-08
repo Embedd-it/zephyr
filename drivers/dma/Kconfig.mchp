@@ -43,3 +43,21 @@ config	DMAC_DESC_COUNT
 	  Number of descriptors to preallocate.
 
 endif # DMA_MCHP_DMAC_G3
+
+config DMA_MCHP_XDMAC_G1
+	bool "Microchip XDMAC driver"
+	default y
+	depends on DT_HAS_MICROCHIP_XDMAC_G1_DMA_ENABLED
+	help
+	  Enables the XDMAC driver support for Microchip MCUs.
+
+if DMA_MCHP_XDMAC_G1
+
+config DMA_MCHP_XDMAC_G1_DESC_COUNT
+	int "DMAC descriptor count"
+	range 2 6
+	default 4
+	help
+	  Number of descriptors to preallocate.
+
+endif
