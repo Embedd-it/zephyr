@@ -18,6 +18,19 @@
 			status = "disabled";
 		};
 
+		qspi: qspi0: qspi@4007c000 {
+			compatible = "microchip,qspi-g1-mspi";
+			reg = <0x4007c000 0xec>, <0x80000000 0x20000000>;
+			reg-names = "regs", "mmap";
+			interrupts = <43 0>;
+			interrupt-names = "qspi";
+			clocks = <&pmc CLOCK_MCHP_QSPI>;
+			clock-names = "mclk";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
 		uart3: uart@400e1c00 {
 			compatible = "microchip,uart-g2-uart";
 			reg = <0x400e1c00 0xe8>;
