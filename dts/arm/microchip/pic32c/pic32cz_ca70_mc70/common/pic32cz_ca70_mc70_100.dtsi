@@ -14,6 +14,17 @@
 			interrupts = <15 0>;
 			interrupt-names = "usart2";
 			clocks = <&pmc CLOCK_MCHP_USART2>;
+			status = "disabled";
+		};
+
+		twihs2: i2c2: i2c@40060000 {
+			compatible = "microchip,twihs-g1-i2c";
+			reg = <0x40060000 0xec>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			interrupts = <41 0>;
+			interrupt-names = "twihs2";
+			clocks = <&pmc CLOCK_MCHP_TWIHS2>;
 			clock-names = "mclk";
 			status = "disabled";
 		};

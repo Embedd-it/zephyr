@@ -35,6 +35,30 @@
 			compatible = "mmio-sram";
 		};
 
+		twihs0: i2c0: i2c@40018000 {
+			compatible = "microchip,twihs-g1-i2c";
+			reg = <0x40018000 0xec>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			interrupts = <19 0>;
+			interrupt-names = "twihs0";
+			clocks = <&pmc CLOCK_MCHP_TWIHS0>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		twihs1: i2c1: i2c@4001c000 {
+			compatible = "microchip,twihs-g1-i2c";
+			reg = <0x4001c000 0xec>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			interrupts = <20 0>;
+			interrupt-names = "twihs1";
+			clocks = <&pmc CLOCK_MCHP_TWIHS1>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		usart0: usart@40024000 {
 			compatible = "microchip,usart-g1-uart";
 			reg = <0x40024000 0xec>;
