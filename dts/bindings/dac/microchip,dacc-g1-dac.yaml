@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip DACC g1 driver.
+
+description: |
+  Microchip DACC g1 driver.
+  The supported devices :
+    - module name="DACC" id="11246" version="E"
+
+compatible: "microchip,dacc-g1-dac"
+
+include:
+  - name: dac-controller.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+
+  clocks:
+    required: true
+
+  prescaler:
+    type: int
+    default: 15
+    description: |
+      Peripheral Clock to DAC Clock Ratio. Prescaler value is calculated as
+      PRESCAL = (MCK / DACClock) - 2. Should be in range from 0 to 15. The
+      value will be written to DACC_MR.PRESCALER bit-field. The property is
+      applicable only to CA70 series devices.
+
+  "#io-channel-cells":
+    const: 1
+
+io-channel-cells:
+  - output

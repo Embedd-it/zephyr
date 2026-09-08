@@ -55,6 +55,17 @@
 			status = "disabled";
 		};
 
+		dacc: dac0: dacc@40040000 {
+			compatible = "microchip,dacc-g1-dac";
+			reg = <0x40040000 0xec>;
+			interrupts = <30 0>;
+			interrupt-names = "dacc";
+			clocks = <&pmc CLOCK_MCHP_DACC>;
+			clock-names = "mclk";
+			#io-channel-cells = <1>;
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;
