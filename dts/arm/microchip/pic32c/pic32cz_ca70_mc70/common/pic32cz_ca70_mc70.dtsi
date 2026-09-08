@@ -55,6 +55,24 @@
 			status = "disabled";
 		};
 
+		afec0: adc0: adc@4003c000 {
+			compatible = "microchip,afec-g1-adc";
+			reg = <0x4003c000 0xec>;
+			interrupts = <29 0>;
+			clocks = <&pmc CLOCK_MCHP_AFEC0>;
+			#io-channel-cells = <1>;
+			status = "disabled";
+		};
+
+		afec1: adc1: adc@40064000 {
+			compatible = "microchip,afec-g1-adc";
+			reg = <0x40064000 0xec>;
+			interrupts = <40 0>;
+			clocks = <&pmc CLOCK_MCHP_AFEC1>;
+			#io-channel-cells = <1>;
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;

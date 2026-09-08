@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip AFEC g1 driver
+
+description: |
+  Microchip AFEC g1 driver.
+  The supported devices :
+    - module name="AFEC" id="11147" version="S"
+
+compatible: "microchip,afec-g1-adc"
+
+include:
+  - name: adc-controller.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  "#io-channel-cells":
+    const: 1
+
+  dmas:
+    description: |
+      RX dma specifier. The specifier will have a phandle
+      reference to the dma controller, the channel number, and peripheral
+      trigger source. The channel number is arbitrary but must not be
+      reused. The number of channels available is device dependent.
+
+      For example dmas for RX may look like
+         dmas = <&xdmac 8 DMA_PERID_AFEC0_RX>;
+
+  dma-names:
+    description: |
+      This should be "rx".
+
+      For example using the example dmas, an example dma-names would be
+         dma-names = "rx";
+
+io-channel-cells:
+  - input
