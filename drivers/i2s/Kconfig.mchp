@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig I2S_MCHP_I2SC_G1
+	bool "Microchip MCU family I2SC Bus Driver"
+	default y
+	depends on DT_HAS_MICROCHIP_I2SC_G1_I2S_ENABLED
+	select PINCTRL
+	select DMA
+	select CLOCK_CONTROL_MCHP_SET_RATE
+	select CLOCK_CONTROL_MCHP_GET_RATE
+	select CLOCK_CONTROL_MCHP_CONFIG_RUNTIME
+	help
+	  Enable Inter Sound (I2S) bus driver for Microchip MCU family.
+
+if I2S_MCHP_I2SC_G1
+
+config I2S_MCHP_I2SC_G1_RX_BLOCK_COUNT
+	int "RX block queue length"
+	default 4
+
+config I2S_MCHP_I2SC_G1_TX_BLOCK_COUNT
+	int "TX block queue length"
+	default 4
+
+config I2S_MCHP_I2SC_G1_COMBINED_DRAIN
+	bool "Keep RX running until TX drain completes for I2S_DIR_BOTH"
+	default y
+	help
+	  On this peripheral, RX and TX share a common clock and cannot be
+	  triggered independently. When DRAIN is issued for I2S_DIR_BOTH,
+	  stopping RX as soon as its current block completes would discard
+	  data that TX is still clocking out. Enable this option to keep the
+	  RX stream running and capturing data until the TX stream has fully
+	  drained its queue, so both streams stop together.
+
+endif
