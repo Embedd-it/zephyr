@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip RTC counter driver.
+
+description: |
+  Microchip RTC g2 peripheral exposed via the Counter API.
+
+  Converts the RTC's internal BCD calendar registers to/from a Unix
+  timestamp and exposes that value as the counter's tick count. Mutually
+  exclusive with the microchip,rtc-g2 (RTC subsystem) driver on the same
+  physical peripheral instance; only one of the two compatibles may be
+  in effect on a given RTC node at a time.
+
+  This driver is responsible for configuring
+  and managing the RTC peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="RTC" id="6056" version="ZB"
+
+compatible: "microchip,rtc-g2-counter"
+
+include: rtc-device.yaml
+
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true

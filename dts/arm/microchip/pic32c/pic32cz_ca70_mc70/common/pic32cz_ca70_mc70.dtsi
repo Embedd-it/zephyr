@@ -35,6 +35,114 @@
 			compatible = "mmio-sram";
 		};
 
+		tc0: tc@4000c000 {
+			reg = <0x4000c000 0xe8>;
+
+			tc0_ch0: tc0-ch0 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <23 0>;
+				interrupt-names = "tc0_c0";
+				clocks = <&pmc CLOCK_MCHP_TC0_CHANNEL0>;
+				clock-names = "mclk";
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc0_ch1: tc0-ch1 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <24 0>;
+				interrupt-names = "tc0_c1";
+				clocks = <&pmc CLOCK_MCHP_TC0_CHANNEL1>;
+				clock-names = "mclk";
+				channel = <1>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc0_ch2: tc0-ch2 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <25 0>;
+				interrupt-names = "tc0_c2";
+				clocks = <&pmc CLOCK_MCHP_TC0_CHANNEL2>;
+				clock-names = "mclk";
+				channel = <2>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+		};
+
+		tc1: tc@40010000 {
+			reg = <0x40010000 0xe8>;
+
+			tc1_ch0: tc1-ch0 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <26 0>;
+				interrupt-names = "tc1_c0";
+				clocks = <&pmc CLOCK_MCHP_TC1_CHANNEL0>;
+				clock-names = "mclk";
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc1_ch1: tc1-ch1 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <27 0>;
+				interrupt-names = "tc1_c1";
+				clocks = <&pmc CLOCK_MCHP_TC1_CHANNEL1>;
+				clock-names = "mclk";
+				channel = <1>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc1_ch2: tc1-ch2 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <28 0>;
+				interrupt-names = "tc1_c2";
+				clocks = <&pmc CLOCK_MCHP_TC1_CHANNEL2>;
+				clock-names = "mclk";
+				channel = <2>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+		};
+
+		tc2: tc@40014000 {
+			reg = <0x40014000 0xe8>;
+
+			tc2_ch0: tc2-ch0 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <47 0>;
+				interrupt-names = "tc2_c0";
+				clocks = <&pmc CLOCK_MCHP_TC2_CHANNEL0>;
+				clock-names = "mclk";
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc2_ch1: tc2-ch1 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <48 0>;
+				interrupt-names = "tc2_c1";
+				clocks = <&pmc CLOCK_MCHP_TC2_CHANNEL1>;
+				clock-names = "mclk";
+				channel = <1>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc2_ch2: tc2-ch2 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <49 0>;
+				interrupt-names = "tc2_c2";
+				clocks = <&pmc CLOCK_MCHP_TC2_CHANNEL2>;
+				clock-names = "mclk";
+				channel = <2>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+		};
+
 		usart0: usart@40024000 {
 			compatible = "microchip,usart-g1-uart";
 			reg = <0x40024000 0xec>;
@@ -53,6 +161,42 @@
 			clocks = <&pmc CLOCK_MCHP_USART1>;
 			clock-names = "mclk";
 			status = "disabled";
+		};
+
+		tc3: tc@40054000 {
+			reg = <0x40054000 0xe8>;
+
+			tc3_ch0: tc3-ch0 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <50 0>;
+				interrupt-names = "tc3_c0";
+				clocks = <&pmc CLOCK_MCHP_TC3_CHANNEL0>;
+				clock-names = "mclk";
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc3_ch1: tc3-ch1 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <51 0>;
+				interrupt-names = "tc3_c1";
+				clocks = <&pmc CLOCK_MCHP_TC3_CHANNEL1>;
+				clock-names = "mclk";
+				channel = <1>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
+
+			tc3_ch2: tc3-ch2 {
+				compatible = "microchip,tc-g3-counter";
+				interrupts = <52 0>;
+				interrupt-names = "tc3_c2";
+				clocks = <&pmc CLOCK_MCHP_TC3_CHANNEL2>;
+				clock-names = "mclk";
+				channel = <2>;
+				#counter-capture-cells = <2>;
+				status = "disabled";
+			};
 		};
 
 		xdmac: dma0: dma-controller@40078000 {
@@ -224,6 +368,17 @@
 				gpio-controller;
 				#gpio-cells = <2>;
 			};
+		};
+
+		rtc: rtc@400e1860 {
+			compatible = "microchip,rtc-g2-counter";
+			reg = <0x400e1860 0x100>;
+			interrupts = <2 0>;
+			interrupt-names = "rtc";
+			clocks = <&pmc CLOCK_MCHP_RTC>;
+			clock-names = "mclk";
+			alarms-count = <1>;
+			status = "disabled";
 		};
 
 		uart2: uart@400e1a00 {
