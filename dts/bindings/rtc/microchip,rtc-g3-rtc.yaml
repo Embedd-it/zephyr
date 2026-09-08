@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip RTC g3 driver.
+
+description: |
+  Microchip RTC g3 driver.
+
+  This driver is responsible for configuring
+  and managing the RTC peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="RTC" id="6056" version="ZB"
+
+compatible: "microchip,rtc-g3-rtc"
+
+include: rtc-device.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true

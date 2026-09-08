@@ -206,6 +206,17 @@
 			};
 		};
 
+		rtc: rtc@400e1860 {
+			compatible = "microchip,rtc-g3-rtc";
+			reg = <0x400e1860 0x100>;
+			interrupts = <2 0>;
+			interrupt-names = "rtc";
+			clocks = <&pmc CLOCK_MCHP_RTC>;
+			clock-names = "mclk";
+			alarms-count = <1>;
+			status = "disabled";
+		};
+
 		uart2: uart@400e1a00 {
 			compatible = "microchip,uart-g2-uart";
 			reg = <0x400e1a00 0xe8>;
