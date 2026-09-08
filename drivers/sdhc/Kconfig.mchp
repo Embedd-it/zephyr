@@ -1,4 +1,4 @@
-# Copyright (C) 2026 Microchip Technology Inc. and its subsidiaries
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config SDHC_MCHP_G1
@@ -9,3 +9,44 @@ config SDHC_MCHP_G1
 	select SDHC_SUPPORTS_NATIVE_MODE
 	help
 	  Enable the Microchip SDHC MMC/SD card G1 driver.
+
+config SDHC_MCHP_HSMCI_G1
+	bool "Microchip HSMCI G1 driver"
+	default y
+	depends on DT_HAS_MICROCHIP_HSMCI_G1_SDHC_ENABLED
+	select PINCTRL
+	select SDHC_SUPPORTS_NATIVE_MODE
+	help
+	  Enable the Microchip HSMCI MMC/SD card driver.
+
+if SDHC_MCHP_HSMCI_G1
+
+config SDHC_MCHP_HSMCI_G1_DMA
+	bool "Microchip HSMCI SDHC driver DMA support"
+	default n
+	select DMA
+	help
+	  Use the DMA controller to move block-transfer data between the
+	  HSMCI FIFO memory aperture (HSMCI_FIFO) and the caller's buffer,
+	  instead of the CPU polling TXRDY/RXRDY for every byte/word.
+
+config SDHC_MCHP_HSMCI_G1_PWRSAVE
+	bool "Power save during card inactive"
+	default y
+	help
+	  Power-save mode reduces the clock-speed during SD card
+	  inactivity.
+
+if SDHC_MCHP_HSMCI_G1_PWRSAVE
+
+config SDHC_MCHP_HSMCI_G1_PWRSAVE_DIV
+	int "Divisor value of clock when in power-save mode"
+	default 7
+	range 0 7
+	help
+	  SD clock frequency is divided by 2**(N+1) where N
+	  is the divisor value. Valid values are 0 to 7.
+
+endif # SDHC_MCHP_HSMCI_G1_PWRSAVE_DIV
+
+endif # SDHC_MCHP_HSMCI_G1
