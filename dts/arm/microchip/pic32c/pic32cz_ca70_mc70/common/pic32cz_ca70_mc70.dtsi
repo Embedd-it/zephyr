@@ -154,6 +154,12 @@
 			status = "disabled";
 		};
 
+		chipid: chipid@400e0940 {
+			compatible = "microchip,chipid-g1-hwinfo";
+			reg = <0x400e0940 0x02>;
+			status = "disabled";
+		};
+
 		uart1: uart@400e0a00 {
 			compatible = "microchip,uart-g2-uart";
 			reg = <0x400e0a00 0xe8>;

@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip CHIPID g1 hwinfo driver
+
+description: |
+  Microchip CHIPID driver.
+
+  Group g1 CHIPID driver supports following hardware peripherals:
+    - module name="CHIPID" id="6417" version="ZC"
+
+compatible: "microchip,chipid-g1-hwinfo"
+
+include: base.yaml
+
+properties:
+  reg:
+    required: true
