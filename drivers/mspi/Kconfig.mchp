@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+config MSPI_MCHP_QSPI_G1
+	bool "Microchip Multi-bit SPI (QUADSPI) Controller driver"
+	depends on DT_HAS_MICROCHIP_QSPI_G1_MSPI_ENABLED
+	depends on !MSPI_ASYNC
+	default y
+	help
+	  QUADSPI / Multi-bit SPI driver support for Microchip.
+
+if MSPI_MCHP_QSPI_G1
+
+config MSPI_MCHP_QSPI_G1_WAIT_FOR_COMPLETION_MS
+	int "Timeout for wait for completion"
+	default 1000
+	help
+	  Timeout for wait for completion
+
+endif
