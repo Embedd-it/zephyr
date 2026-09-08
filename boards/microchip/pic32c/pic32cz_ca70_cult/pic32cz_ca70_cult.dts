@@ -8,6 +8,7 @@
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <microchip/pic32c/pic32cz_ca70_mc70/pic32cz_ca70/pic32cz2051ca70144.dtsi>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <zephyr/dt-bindings/gpio/arduino-header-r3.h>
 #include "pic32cz_ca70_cult-pinctrl.dtsi"
 
 / {
@@ -25,6 +26,35 @@
 		led0 = &led0;
 		sw0 = &button0;
 		sw1 = &button1;
+	};
+
+	arduino_header: arduino-connector {
+		compatible = "arduino-header-r3";
+		#gpio-cells = <2>;
+		gpio-map-mask = <0xffffffff 0xffffffc0>;
+		gpio-map-pass-thru = <0 0x3f>;
+		gpio-map = <ARDUINO_HEADER_R3_A0 0 &pioa 18 0>,
+			   <ARDUINO_HEADER_R3_A1 0 &pioc 31 0>,
+			   <ARDUINO_HEADER_R3_A2 0 &pioc 26 0>,
+			   <ARDUINO_HEADER_R3_A3 0 &pioc 15 0>,
+			   <ARDUINO_HEADER_R3_A4 0 &pioc 13 0>,
+			   <ARDUINO_HEADER_R3_A5 0 &pioc 30 0>,
+			   <ARDUINO_HEADER_R3_D0 0 &piod 18 0>,  /* RX */
+			   <ARDUINO_HEADER_R3_D1 0 &piod 19 0>,  /* TX */
+			   <ARDUINO_HEADER_R3_D2 0 &pioa 23 0>,
+			   <ARDUINO_HEADER_R3_D3 0 &piod 10 0>,
+			   <ARDUINO_HEADER_R3_D4 0 &piod 24 0>,
+			   <ARDUINO_HEADER_R3_D5 0 &piod 11 0>,
+			   <ARDUINO_HEADER_R3_D6 0 &pioc 19 0>,
+			   <ARDUINO_HEADER_R3_D7 0 &piod 17 0>,
+			   <ARDUINO_HEADER_R3_D8 0 &pioc 9 0>,
+			   <ARDUINO_HEADER_R3_D9 0 &pioc 21 0>,
+			   <ARDUINO_HEADER_R3_D10 0 &piod 26 0>, /* CS */
+			   <ARDUINO_HEADER_R3_D11 0 &piod 21 0>, /* MOSI */
+			   <ARDUINO_HEADER_R3_D12 0 &piod 20 0>, /* MISO */
+			   <ARDUINO_HEADER_R3_D13 0 &piod 22 0>, /* SCK */
+			   <ARDUINO_HEADER_R3_D14 0 &pioa 3 0>,  /* SDA */
+			   <ARDUINO_HEADER_R3_D15 0 &pioa 4 0>;  /* SCL */
 	};
 
 	leds {
@@ -59,6 +89,15 @@
 	pinctrl-0 = <&uart1_default>;
 	pinctrl-names = "default";
 
+	status = "okay";
+};
+
+&spi0 {
+	pinctrl-0 = <&arduino_header_spi0>;
+	pinctrl-names = "default";
+	cs-gpios = <&arduino_header ARDUINO_HEADER_R3_D10 GPIO_ACTIVE_LOW>;
+	dmas = <&xdmac 2 DMA_PERID_SPI0_TX>, <&xdmac 3 DMA_PERID_SPI0_RX>;
+	dma-names = "tx", "rx";
 	status = "okay";
 };
 

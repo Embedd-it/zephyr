@@ -41,4 +41,22 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	ext1_header_spi: ext1_header_spi0: ext1_header_spi0 {
+		group1 {
+			pinmux = <PD20B_SPI0_MISO>,
+				 <PD21B_SPI0_MOSI>,
+				 <PD22B_SPI0_SPCK>,
+				 <PD25B_SPI0_NPCS1>;
+		};
+	};
+
+	arduino_header_spi: arduino_header_spi0: arduino_header_spi0 {
+		group1 {
+			pinmux = <PD20B_SPI0_MISO>,
+				 <PD21B_SPI0_MOSI>,
+				 <PD22B_SPI0_SPCK>,
+				 <PD26_GPIO>;
+		};
+	};
 };
