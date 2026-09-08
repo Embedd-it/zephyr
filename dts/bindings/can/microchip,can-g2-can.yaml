@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip CAN g2 driver
+
+description: |
+  Specialization of Bosch m_can CAN FD controller for Microchip g2
+  peripherals.
+
+  Group g2 CAN driver supports following hardware peripherals:
+    - module name="MCAN" id="11273" version="G"
+
+compatible: "microchip,can-g2-can"
+
+include:
+  - name: bosch,m_can-base.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+    description: |
+      2 reg blocks needed;
+      - Register block for the MCAN configuration registers
+      - Register block for the DMA Base Address
+
+  reg-names:
+    type: string-array
+    required: true
+    description: |
+      description of reg blocks: m_can, dma_base, message_ram, sram_sel
+
+  interrupts:
+    required: true
+
+  interrupt-names:
+    required: true
+
+  clocks:
+    required: true
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    can0: can@40030000 {
+      compatible = "microchip,can-g2-can";
+      reg = <0x40030000 0x100>, <0x40088110 0x04>;
+      reg-names = "m_can", "dma_base";
+      interrupts = <35 0>, <36 0>;
+      interrupt-names = "int0", "int1";
+      clocks = <&pmc CLOCK_MCHP_MCAN0>;
+      clock-names = "mclk";
+      bosch,mram-cfg = <0x0 28 8 3 3 0 1 1>;
+      status = "disabled";
+    };

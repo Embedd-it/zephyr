@@ -18,6 +18,17 @@
 			status = "disabled";
 		};
 
+		can1: can@40034000 {
+			compatible = "microchip,can-g2-can";
+			reg = <0x40034000 0x100>, <0x40088114 0x04>;
+			reg-names = "m_can", "dma_base";
+			interrupts = <37 0>, <38 0>;
+			interrupt-names = "int0", "int1";
+			clocks = <&pmc CLOCK_MCHP_MCAN1>;
+			clock-names = "mclk";
+			bosch,mram-cfg = <0x0 28 8 3 3 0 1 1>;
+		};
+
 		uart3: uart@400e1c00 {
 			compatible = "microchip,uart-g2-uart";
 			reg = <0x400e1c00 0xe8>;

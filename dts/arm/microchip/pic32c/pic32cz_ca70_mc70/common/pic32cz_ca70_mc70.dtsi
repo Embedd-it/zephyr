@@ -55,6 +55,18 @@
 			status = "disabled";
 		};
 
+		can0: can@40030000 {
+			compatible = "microchip,can-g2-can";
+			reg = <0x40030000 0x100>, <0x40088110 0x04>;
+			reg-names = "m_can", "dma_base";
+			interrupts = <35 0>, <36 0>;
+			interrupt-names = "int0", "int1";
+			clocks = <&pmc CLOCK_MCHP_MCAN0>;
+			clock-names = "mclk";
+			bosch,mram-cfg = <0x0 28 8 3 3 0 1 1>;
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;
