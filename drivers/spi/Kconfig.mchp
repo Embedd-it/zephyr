@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config SPI_MCHP_FLEXCOM_G1
@@ -56,3 +56,54 @@ config SPI_MCHP_DMA_DRIVEN
 	  Requires DMA controller and dmas property in device tree.
 
 endif # SPI_MCHP_SERCOM
+
+config SPI_MCHP_G1
+	bool "Microchip SPI driver"
+	default y
+	depends on DT_HAS_MICROCHIP_SPI_G1_ENABLED
+	select PINCTRL
+	help
+	  Enable support for the SPI driver.
+	  Polling mode (SPI host only) is the default due to missing FIFO.
+
+config SPI_MCHP_G1_INTERRUPT
+	bool "Microchip SPI driver in interrupt mode"
+	default n
+	depends on SPI_MCHP_G1
+	depends on !SPI_MCHP_G1_DMA
+	help
+	  Enable interrupt mode for the SPI driver, supports both SPI Host/Target.
+	  Disabled by default.
+
+config SPI_MCHP_G1_DMA
+	bool "Microchip SPI driver in DMA mode"
+	default y
+	depends on SPI_MCHP_G1
+	select DMA
+	help
+	  Enable DMA mode for the SPI driver.
+
+if SPI_MCHP_G1
+
+config SPI_MCHP_G1_CHECK_TIME
+	int "Timeout (us) used in WAIT_FOR to check bits in status register"
+	default 1000000
+	help
+	  This value need to be changed, depending on selected baudrate
+
+if SPI_RTIO
+
+config MCHP_SPI_RTIO_SQ_SIZE
+	int "Number of available submission queue entries"
+	default 8 # Sensible default that covers most common spi transactions
+	help
+	  When RTIO is use with SPI each driver holds a context with which blocking
+	  API calls use to perform SPI transactions. This queue needs to be as deep
+	  as the longest set of spi_buf_sets used, where normal SPI operations are
+	  used (equal length buffers). It may need to be slightly deeper where the
+	  spi buffer sets for transmit/receive are not always matched equally in
+	  length as these are transformed into normal transceives.
+
+endif # SPI_RTIO
+
+endif # SPI_MCHP_G1
