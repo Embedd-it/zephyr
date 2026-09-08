@@ -1,4 +1,4 @@
-# Copyright (c) 2025-2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config DAC_MCHP_G1
@@ -46,3 +46,11 @@ config DAC_MCHP_G2
 	select PINCTRL
 	help
 	  Enable support for the Microchip DAC driver on G2 DAC peripherals.
+
+config DAC_MCHP_DACC_G1
+	bool "Microchip DACC Driver"
+	depends on DT_HAS_MICROCHIP_DACC_G1_DAC_ENABLED
+	default y
+	select PINCTRL
+	help
+	  Enable support for the Microchip DACC driver.

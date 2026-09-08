@@ -29,6 +29,7 @@ zephyr_library_sources_ifdef(CONFIG_DAC_INFINEON_HPPASS_CSG dac_infineon_hppass_
 zephyr_library_sources_ifdef(CONFIG_DAC_ITE_IT51XXX dac_ite_it51xxx.c)
 zephyr_library_sources_ifdef(CONFIG_DAC_LTC166X dac_ltc166x.c)
 zephyr_library_sources_ifdef(CONFIG_DAC_MAX22017 dac_max22017.c)
+zephyr_library_sources_ifdef(CONFIG_DAC_MCHP_DACC_G1 dac_mchp_dacc_g1.c)
 zephyr_library_sources_ifdef(CONFIG_DAC_MCHP_G1 dac_mchp_g1.c)
 zephyr_library_sources_ifdef(CONFIG_DAC_MCHP_G2 dac_mchp_g2.c)
 zephyr_library_sources_ifdef(CONFIG_DAC_MCP4725 dac_mcp4725.c)
