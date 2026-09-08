@@ -1,4 +1,4 @@
-# Copyright (c) 2025-2026 Microchip Technology Inc.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Microchip Technology Inc.
 # SPDX-License-Identifier: Apache-2.0
 
 config UART_MCHP_SERCOM_G1
@@ -12,19 +12,65 @@ config UART_MCHP_SERCOM_G1
 	help
 	  This option enables UART driver for group (g1) of SERCOM peripherals.
 
-if UART_MCHP_SERCOM_G1
+config UART_MCHP_UART_G2
+	bool
+	default y
+	depends on DT_HAS_MICROCHIP_UART_G2_UART_ENABLED
+	select SERIAL_HAS_DRIVER
+	select SERIAL_SUPPORT_INTERRUPT
+	select SERIAL_SUPPORT_ASYNC
+	select PINCTRL
+	help
+	  This option enables UART driver for group (g2) of UART peripherals.
+
+config UART_MCHP_USART_G1
+	bool
+	default y
+	depends on DT_HAS_MICROCHIP_USART_G1_UART_ENABLED
+	select SERIAL_HAS_DRIVER
+	select SERIAL_SUPPORT_INTERRUPT
+	select SERIAL_SUPPORT_ASYNC
+	select PINCTRL
+	help
+	  This option enables USART driver for group (g1) of USART peripherals.
+
+if UART_MCHP_SERCOM_G1 || UART_MCHP_UART_G2 || UART_MCHP_USART_G1
 
 config UART_MCHP_ASYNC
 	bool
 	default y
 	depends on UART_ASYNC_API
 	depends on DMA
-	depends on $(dt_compat_any_has_prop,$(DT_COMPAT_MICROCHIP_SERCOM_G1_UART),dmas)
+	depends on $(dt_compat_any_has_prop,$(DT_COMPAT_MICROCHIP_SERCOM_G1_UART),dmas) || \
+		$(dt_compat_any_has_prop,$(DT_COMPAT_MICROCHIP_UART_G2_UART),dmas) || \
+		$(dt_compat_any_has_prop,$(DT_COMPAT_MICROCHIP_USART_G1_UART),dmas)
 	help
 	  Enable async/DMA support for UART instances that have dmas property.
 	  Instances without dmas property will return -ENOTSUP for async operations.
 
-endif # UART_MCHP_SERCOM_G1
+config UART_MCHP_USART_G1_ASYNC_EVT_QUEUE_DEPTH
+	int "USART (g1) async event queue depth"
+	default 16
+	range 4 256
+	depends on UART_MCHP_USART_G1 && UART_MCHP_ASYNC
+	help
+	  Number of async UART events that can be pending per USART (g1) instance.
+	  Events raised in interrupt context are queued and delivered to the
+	  application callback from the system workqueue. RX buffers must be large
+	  enough to cover the workqueue latency at the configured baudrate.
+
+config UART_MCHP_UART_G2_ASYNC_EVT_QUEUE_DEPTH
+	int "UART (g2) async event queue depth"
+	default 16
+	range 4 256
+	depends on UART_MCHP_UART_G2 && UART_MCHP_ASYNC
+	help
+	  Number of async UART events that can be pending per UART (g2) instance.
+	  Events raised in interrupt context are queued and delivered to the
+	  application callback from the system workqueue. RX buffers must be large
+	  enough to cover the workqueue latency at the configured baudrate.
+
+endif # UART_MCHP_SERCOM_G1 || UART_MCHP_UART_G2 || UART_MCHP_USART_G1
 
 config UART_MCHP_DBGU_G1
 	bool "Microchip SAM Debug Unit (DBGU) driver"
