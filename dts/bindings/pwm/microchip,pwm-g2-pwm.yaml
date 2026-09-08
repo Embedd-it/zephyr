@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip PWM g2 driver.
+
+description: |
+  Microchip PWM g2 driver.
+
+  This driver is responsible for configuring
+  and managing the TC peripheral in Microchip microcontrollers for PWM configuration.
+  The supported devices :
+    - module name="PWM" id="6343" version="Y"
+
+compatible: "microchip,pwm-g2-pwm"
+
+include:
+  - name: base.yaml
+  - name: pwm-controller.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  clocks:
+    required: true
+
+  prescaler:
+    type: int
+    required: true
+    min: 0
+    max: 10
+    description: Clock prescaler at the input of the PWM
+
+  divider:
+    type: int
+    required: true
+    min: 1
+    max: 255
+    description: Clock divider at the input of the PWM
+
+  "#pwm-cells":
+    const: 3
+
+pwm-cells:
+  - channel
+  - period
+  - flags

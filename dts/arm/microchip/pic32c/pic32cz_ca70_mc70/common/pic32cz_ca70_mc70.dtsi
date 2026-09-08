@@ -35,6 +35,19 @@
 			compatible = "mmio-sram";
 		};
 
+		pwm0: pwm@40020000 {
+			compatible = "microchip,pwm-g2-pwm";
+			reg = <0x40020000 0x464>;
+			interrupts = <31 0>;
+			interrupt-names = "pwm0";
+			clocks = <&pmc CLOCK_MCHP_PWM0>;
+			clock-names = "mclk";
+			prescaler = <10>;
+			divider = <1>;
+			#pwm-cells = <3>;
+			status = "disabled";
+		};
+
 		usart0: usart@40024000 {
 			compatible = "microchip,usart-g1-uart";
 			reg = <0x40024000 0xec>;
@@ -52,6 +65,19 @@
 			interrupt-names = "usart1";
 			clocks = <&pmc CLOCK_MCHP_USART1>;
 			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		pwm1: pwm@4005c000 {
+			compatible = "microchip,pwm-g2-pwm";
+			reg = <0x4005c000 0x464>;
+			interrupts = <60 0>;
+			interrupt-names = "pwm1";
+			clocks = <&pmc CLOCK_MCHP_PWM1>;
+			clock-names = "mclk";
+			prescaler = <10>;
+			divider = <1>;
+			#pwm-cells = <3>;
 			status = "disabled";
 		};
 
