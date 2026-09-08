@@ -8,6 +8,16 @@
 
 / {
 	soc {
+		hsmci: hsmci@40000000 {
+			compatible = "microchip,hsmci-g1-sdhc";
+			reg = <0x40000000 0x4000>;
+			interrupts = <18 0>;
+			interrupt-names = "hsmci";
+			clocks = <&pmc CLOCK_MCHP_HSMCI>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		usart2: usart@4002c000 {
 			compatible = "microchip,usart-g1-uart";
 			reg = <0x4002c000 0xec>;

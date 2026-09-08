@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip HSMCI SD g1 host controller
+
+description: |
+  Microchip HSMCI g1 driver.
+
+  This driver is responsible for configuring
+  and managing the HSMCI peripheral in Microchip microcontrollers.
+  The supported devices :
+    - module name="HSMCI" id="6449" version="Q"
+
+compatible: "microchip,hsmci-g1-sdhc"
+
+include: [sdhc.yaml, pinctrl-device.yaml]
+
+properties:
+  reg:
+    required: true
+
+  pinctrl-0:
+    required: true
+
+  pinctrl-names:
+    required: true
+
+  clocks:
+    required: true
+
+  cd-gpios:
+    type: phandle-array
+    description: |
+      Optional carrier detect signal, used as input to see if a drive
+      is actually inserted in the slot.
+
+  dmas:
+    description: |
+      Single DMA specifier for the shared HSMCI DMA handshake line — one
+      request line serves both TX and RX; direction is selected in
+      software per-transfer.
+
+  dma-names:
+    description: should be "rxtx"
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    &hsmci {
+       dmas = <&xdmac 0 DMA_PERID_HSMCI_TX_RX>;
+      dma-names = "rxtx";
+    };
