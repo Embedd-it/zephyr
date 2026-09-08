@@ -7,6 +7,7 @@
 /dts-v1/;
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <microchip/pic32c/pic32cz_ca70_mc70/pic32cz_ca70/pic32cz2051ca70144.dtsi>
+#include <zephyr/dt-bindings/pwm/pwm.h>
 #include "pic32cz_ca70_cult-pinctrl.dtsi"
 
 / {
@@ -22,6 +23,7 @@
 
 	aliases {
 		led0 = &led0;
+		pwm-led0 = &green_pwm_led;
 	};
 
 	leds {
@@ -30,6 +32,14 @@
 		led0: led_0 {
 			gpios = <&piod 29 GPIO_ACTIVE_LOW>;
 			label = "User LED 1";
+		};
+	};
+
+	pwmleds: pwmleds {
+		compatible = "pwm-leds";
+
+		green_pwm_led: green_pwm_led {
+			pwms = <&pwm0 3 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
 		};
 	};
 };

@@ -41,4 +41,10 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	green_led_pwm0: green_led_pwm0 {
+		group1 {
+			pinmux = <PD23A_PWMC0_PWMH3>;
+		};
+	};
 };
