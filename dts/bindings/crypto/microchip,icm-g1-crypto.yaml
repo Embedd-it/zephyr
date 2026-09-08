@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip G1 ICM Controller Driver
+
+description: |
+  Microchip Integrity Check Monitor (i.e. hashing peripheral).
+  Supports SHA224 and SHA256 algorithms.
+
+  Group g1 ICM driver supports following hardware peripherals:
+    - module name="ICM" id="11105" version="F"
+
+
+compatible: "microchip,icm-g1-crypto"
+
+include: [base.yaml]
+
+properties:
+  reg:
+    required: true
+
+  clocks:
+    required: true

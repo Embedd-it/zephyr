@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip g2 AES Controller Driver
+
+description: |
+  Microchip Advanced Encryption Standard (AES) calculator peripheral.
+
+  Group g2 AES driver supports following hardware peripherals:
+    - module name="AES" id="6149" version="T"
+
+
+compatible: "microchip,aes-g2-crypto"
+
+include: [base.yaml]
+
+properties:
+  reg:
+    required: true
+
+  clocks:
+    required: true
+
+  dmas:
+    description: |
+      Input (TX) and output (RX) DMA specifiers. Both are meaningful
+      (and required) when CONFIG_CRYPTO_MCHP_AES_G2_DMA is enabled.
+
+  dma-names:
+    description: |
+      Must be "tx" and "rx", matching the order given in "dmas".
+
+examples:
+  - |
+    /* Definition example: PIC32CZ_CA70 SoC DTSI */
+    &aes {
+      status = "okay";
+      dmas = <&xdmac 12 DMA_PERID_AES_TX>, <&xdmac 13 DMA_PERID_AES_RX>;
+      dma-names = "tx", "rx";
+    };

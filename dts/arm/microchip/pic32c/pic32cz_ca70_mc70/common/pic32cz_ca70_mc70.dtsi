@@ -55,6 +55,26 @@
 			status = "disabled";
 		};
 
+		icm: icm@40048000 {
+			compatible = "microchip,icm-g1-crypto";
+			reg = <0x40048000 0x58>;
+			interrupts = <32 1>;
+			interrupt-names = "icm";
+			clocks = <&pmc CLOCK_MCHP_ICM>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
+		aes: aes@4006c000 {
+			compatible = "microchip,aes-g2-crypto";
+			reg = <0x4006c000 0xac>;
+			interrupts = <56 1>;
+			interrupt-names = "aes";
+			clocks = <&pmc CLOCK_MCHP_AES>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;
