@@ -41,4 +41,10 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	arduino_header_adc0: arduino_header_afec0_ad7: arduino_header_afec0_ad7 {
+		group1 {
+			pinmux = <PA18X_AFE0_AD7>;
+		};
+	};
 };
