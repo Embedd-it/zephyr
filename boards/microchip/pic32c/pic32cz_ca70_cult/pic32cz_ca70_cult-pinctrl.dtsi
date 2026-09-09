@@ -41,4 +41,14 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	x32_header_i2s: x32_header_i2s {
+		group1 {
+			pinmux = <PE01C_I2SC1_DO0>,
+				 <PE02C_I2SC1_DI0>,
+				 <PE00C_I2SC1_WS>,
+				 <PA20D_I2SC1_CK>,
+				 <PA19D_I2SC1_MCK>;
+		};
+	};
 };

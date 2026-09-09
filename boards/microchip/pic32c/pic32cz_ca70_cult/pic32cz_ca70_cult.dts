@@ -50,3 +50,16 @@
 &cpu0 {
 	clock-frequency = <300000000>;
 };
+
+&pmc {
+	i2sc1-gclk;
+};
+
+&i2sc1 {
+	pinctrl-0 = <&x32_header_i2s>;
+	pinctrl-names = "default";
+
+	dmas = <&xdmac 4 DMA_PERID_I2SC1_TX_L>, <&xdmac 5 DMA_PERID_I2SC1_RX_L>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
