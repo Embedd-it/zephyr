@@ -35,6 +35,13 @@
 		};
 	};
 
+	can0_default: can0_default {
+		group1 {
+			pinmux = <PB02A_CAN0_TX>,
+				 <PB03A_CAN0_RX>;
+		};
+	};
+
 	usart0_default: usart0_default {
 		group1 {
 			pinmux = <PB01C_USART0_TXD>,
