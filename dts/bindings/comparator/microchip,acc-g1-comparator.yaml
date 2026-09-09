@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+title: Microchip g1 Analog Comparator
+
+description: |
+  Microchip ACC g1 peripheral exposed via the Comparator API.
+
+  This driver is responsible for configuring and managing the ACC peripheral
+  in Microchip microcontrollers.
+  The supported devices :
+    - module name="ACC" id="6490" version="H"
+
+compatible: "microchip,acc-g1-comparator"
+
+include:
+  - name: base.yaml
+  - name: pinctrl-device.yaml
+
+properties:
+  reg:
+    required: true
+    description: |
+      Base address of AC peripheral and its size
+
+  selminus:
+    type: string
+    default: "ts"
+    description: |
+      Selection for minus comparator input
+    enum:
+      - "ts"
+      - "vrefp"
+      - "dac0"
+      - "dac1"
+      - "afe0-ad0"
+      - "afe0-ad1"
+      - "afe0-ad2"
+      - "afe0-ad3"
+
+  selplus:
+    type: string
+    default: "afe0-ad0"
+    description: |
+      Selection for plus comparator input
+    enum:
+      - "afe0-ad0"
+      - "afe0-ad1"
+      - "afe0-ad2"
+      - "afe0-ad3"
+      - "afe0-ad4"
+      - "afe0-ad5"
+      - "afe1-ad0"
+      - "afe1-ad1"
+
+  invert-output:
+    type: boolean
+    description: |
+      Whether the comparator output is directly processed or inverted beforehand
+
+  hysteresis:
+    type: string
+    default: "none"
+    description: |
+      Input hysteresis selection
+    enum:
+      - "none"
+      - "low"
+      - "medium"
+      - "high"
+
+  current:
+    type: string
+    default: "low-power"
+    description: |
+      Current selection. High speed comes at the cost of a higher power consumption
+    enum:
+      - "low-power"
+      - "high-speed"

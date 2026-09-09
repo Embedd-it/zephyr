@@ -55,6 +55,16 @@
 			status = "disabled";
 		};
 
+		acc: acc@40044000 {
+			compatible = "microchip,acc-g1-comparator";
+			reg = <0x40044000 0xec>;
+			interrupts = <33 0>;
+			interrupt-names = "acc";
+			clocks = <&pmc CLOCK_MCHP_ACC>;
+			clock-names = "mclk";
+			status = "disabled";
+		};
+
 		xdmac: dma0: dma-controller@40078000 {
 			compatible = "microchip,xdmac-g1-dma";
 			reg = <0x40078000 0x648>;
