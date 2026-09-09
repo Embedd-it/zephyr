@@ -1,0 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&pwm0 {
+	pinctrl-0 = <&green_led_pwm0>;
+	pinctrl-names = "default";
+	status = "okay";
+};
