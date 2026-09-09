@@ -1,0 +1,19 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* PWM is routed to Arduino D5 (PWMC0_PWMH0; J402_6) and D3 (PWMC0_PWML0; J402_4) */
+
+/ {
+	aliases {
+		pwm-test = &pwm0;
+	};
+};
+
+&pwm0 {
+	pinctrl-0 = <&green_led_pwm0>;
+	pinctrl-names = "default";
+	status = "okay";
+};
