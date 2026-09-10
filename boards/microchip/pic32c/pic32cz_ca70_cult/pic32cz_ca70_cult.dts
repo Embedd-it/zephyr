@@ -8,6 +8,7 @@
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <microchip/pic32c/pic32cz_ca70_mc70/pic32cz_ca70/pic32cz2051ca70144.dtsi>
 #include "pic32cz_ca70_cult-pinctrl.dtsi"
+#include <common/freq.h>
 
 / {
 	compatible = "pic32cz_ca70,cult", "microchip,pic32cz2051ca70144";
@@ -49,4 +50,42 @@
 
 &cpu0 {
 	clock-frequency = <300000000>;
+};
+
+&qspi {
+	pinctrl-0 = <&qspi_default>;
+	pinctrl-names = "default";
+	clock-frequency = <DT_FREQ_M(25)>;
+
+	dmas = <&xdmac 23 0>;
+	dma-names = "txrx";
+	status = "okay";
+
+	sst26vf032ba: flash@0 {
+		compatible = "jedec,nor";
+		reg = <0>;
+		mspi-max-frequency = <DT_FREQ_M(25)>;
+
+		size = <DT_SIZE_M(32)>; /* 32 Mbits */
+		jedec-id = [bf 26 42];
+
+		mspi-io-mode = "MSPI_IO_MODE_QUAD_1_4_4";
+		mspi-data-rate = "MSPI_DATA_RATE_SINGLE";
+
+		read-command = <0xeb>;
+		rx-dummy = <6>;
+
+		write-command = <0x32>;
+		tx-dummy = <0>;
+
+		command-length = "INSTR_1_BYTE";
+		address-length = "ADDR_3_BYTE";
+
+		quad-enable-requirements = "NONE";
+
+		mspi-hardware-ce-num = <0>;
+
+		requires-ulbpr;
+		status = "okay";
+	};
 };

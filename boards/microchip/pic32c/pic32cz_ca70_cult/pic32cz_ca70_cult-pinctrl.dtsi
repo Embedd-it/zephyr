@@ -41,4 +41,15 @@
 				 <PB00C_USART0_RXD>;
 		};
 	};
+
+	qspi_default: qspi_default {
+		group1 {
+			pinmux = <PA13A_QIO0>,
+				 <PA12A_QIO1>,
+				 <PA17A_QIO2>,
+				 <PD31A_QIO3>,
+				 <PA14A_QSCK>,
+				 <PA11A_QCS>;
+		};
+	};
 };

@@ -13,6 +13,7 @@ supported:
   - clock_control
   - dma
   - gpio
+  - mspi
   - pinctrl
   - uart
 vendor: microchip
