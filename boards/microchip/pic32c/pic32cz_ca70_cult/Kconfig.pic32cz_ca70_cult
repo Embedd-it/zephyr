@@ -3,3 +3,13 @@
 
 config BOARD_PIC32CZ_CA70_CULT
 	select SOC_PIC32CZ2051CA70144
+
+if ETH_MCHP_GMAC_G2
+
+config EEPROM
+	default y if NVMEM
+
+endif # ETH_MCHP_GMAC_G2
+
+configdefault ETH_DRIVER
+	default y

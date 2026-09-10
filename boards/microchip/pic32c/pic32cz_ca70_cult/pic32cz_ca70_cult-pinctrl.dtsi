@@ -55,4 +55,24 @@
 				 <PA04A_TWCK0>;
 		};
 	};
+
+	ethernet_header_rmii: ethernet_header_rmii {
+		group1 {
+			pinmux = <PD00A_GTXCK>,
+				 <PD02A_GTX0>,
+				 <PD03A_GTX1>,
+				 <PD01A_GTXEN>,
+				 <PD05A_GRX0>,
+				 <PD06A_GRX1>,
+				 <PD07A_GRXER>,
+				 <PD04A_GRXDV>;
+		};
+	};
+
+	ethernet_header_mdio: ethernet_header_mdio {
+		group1 {
+			pinmux = <PD09A_GMDIO>,
+				 <PD08A_GMDC>;
+		};
+	};
 };

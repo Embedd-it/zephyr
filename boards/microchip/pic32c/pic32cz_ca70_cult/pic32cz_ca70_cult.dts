@@ -75,6 +75,29 @@
 	};
 };
 
+&gmac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&ethernet_header_rmii>;
+	nvmem-cells = <&mac_address>;
+	nvmem-cell-names = "mac-address";
+	phy-connection-type = "rmii";
+	phy-handle = <&gmac_phy>;
+	status = "okay";
+};
+
+&gmac_mdio {
+	pinctrl-names = "default";
+	pinctrl-0 = <&ethernet_header_mdio>;
+	status = "okay";
+
+	gmac_phy: gmac0_phy: ethernet-phy@0 {
+		compatible = "ethernet-phy";
+		reg = <0>;
+		reset-gpios = <&pioc 10 GPIO_ACTIVE_LOW>;
+		status = "okay";
+	};
+};
+
 &uart1 {
 	current-speed = <115200>;
 
