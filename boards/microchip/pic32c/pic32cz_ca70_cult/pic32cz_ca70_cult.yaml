@@ -12,6 +12,7 @@ ram: 512
 supported:
   - clock_control
   - dma
+  - flash
   - gpio
   - pinctrl
   - uart
