@@ -47,3 +47,14 @@ tests:
     platform_allow:
       - native_sim/native/64
     build_only: true
+  sample.usbh.shell.billboard:
+    depends_on:
+      - usbh
+    tags:
+      - usb
+    extra_args:
+      - FILE_SUFFIX=host
+      - EXTRA_CONF_FILE="usbh_billboard_prj.conf"
+    platform_allow:
+      - ek_ra8m2_r7ka8m2jflcac_cm85
+    build_only: true
