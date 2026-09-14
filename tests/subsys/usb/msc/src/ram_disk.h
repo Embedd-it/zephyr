@@ -1,0 +1,12 @@
+/*
+ * Copyright (c) 2026 Renesas Electronics Corporation
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#ifndef RAM_DISK_H_INCLUDED
+#define RAM_DISK_H_INCLUDED
+
+void ram_disk_setup(void);
+
+#endif /* RAM_DISK_H_INCLUDED */
