@@ -15,4 +15,5 @@ supported:
   - gpio
   - pinctrl
   - uart
+  - usbh
 vendor: microchip

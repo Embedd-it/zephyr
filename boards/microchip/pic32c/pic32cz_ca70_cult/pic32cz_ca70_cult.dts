@@ -34,6 +34,21 @@
 	};
 };
 
+zephyr_uhc0: &usbhs {
+	status = "okay";
+};
+
+&pioc {
+	status = "okay";
+
+	/* Set PC25 to low to enable host mode on USBHS port */
+	usbhs-hog {
+		gpio-hog;
+		gpios = <25 GPIO_ACTIVE_HIGH>;
+		output-low;
+	};
+};
+
 &uart1 {
 	current-speed = <115200>;
 
