@@ -1,0 +1,31 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/dma/mchp_pic32cz_ca70_mc70_dma.h>
+
+dut: &usart0 {
+	current-speed = <115200>;
+
+	stop-bits = "1";
+	parity = "none";
+	data-bits = <8>;
+
+	pinctrl-0 = <&usart0_default>;
+	pinctrl-names = "default";
+
+	dmas = <&xdmac 10 DMA_PERID_USART0_TX>, <&xdmac 11 DMA_PERID_USART0_RX>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};
+
+&uart1 {
+	dmas = <&xdmac 8 DMA_PERID_UART1_TX>, <&xdmac 9 DMA_PERID_UART1_RX>;
+	dma-names = "tx", "rx";
+};
+
+&xdmac {
+	status = "okay";
+};
