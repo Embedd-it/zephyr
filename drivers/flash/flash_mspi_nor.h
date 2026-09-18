@@ -170,6 +170,7 @@ struct flash_mspi_nor_config {
 	bool initial_soft_reset  : 1;
 	bool has_dpd             : 1;
 	bool uses_runtime_sfdp   : 1;
+	bool requires_ulbpr_exist: 1;
 	enum mspi_xfer_mode control_xfer_mode;
 	enum mspi_xfer_mode data_xfer_mode;
 };

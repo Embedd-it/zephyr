@@ -127,3 +127,10 @@ properties:
     description: |
       When set, the flash driver performs software reset of the flash chip
       at initialization.
+
+  requires-ulbpr:
+    type: boolean
+    description: |
+      Chip powers up with the whole array write-protected via its Block
+      Protection Register. If set, the driver issues WREN followed by
+      Global Block Protection Unlock (ULBPR, 0x98) during initialization.

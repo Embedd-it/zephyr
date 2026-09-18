@@ -244,6 +244,21 @@ static int cmd_wren(const struct device *dev)
 	return 0;
 }
 
+static int cmd_ulbpr(const struct device *dev)
+{
+	const struct flash_mspi_nor_config *dev_config = dev->config;
+	int rc;
+
+	set_up_xfer(dev, MSPI_TX, dev_config->control_xfer_mode);
+	rc = perform_xfer(dev, SPI_NOR_CMD_ULBPR);
+	if (rc < 0) {
+		LOG_ERR("%s failed: %d", __func__, rc);
+		return rc;
+	}
+
+	return 0;
+}
+
 static int cmd_wrsr(const struct device *dev, uint8_t op_code,
 		    uint8_t sr_cnt, uint8_t *sr)
 {
@@ -1993,6 +2008,18 @@ static int flash_chip_init(const struct device *dev)
 		}
 	}
 
+	if (dev_config->requires_ulbpr_exist) {
+		rc = cmd_wren(dev);
+		if (rc < 0) {
+			return rc;
+		}
+
+		rc = cmd_ulbpr(dev);
+		if (rc < 0) {
+			return rc;
+		}
+	}
+
 #if defined(CONFIG_MSPI_MEMMAP)
 	/* Enable XIP access for this chip if specified so in DT. */
 	if (dev_config->memmap_cfg.enable) {
@@ -2273,6 +2300,10 @@ BUILD_ASSERT((FLASH_SIZE_INST(inst) % CONFIG_FLASH_MSPI_NOR_LAYOUT_PAGE_SIZE) ==
 		(.default_erase_types = DEFAULT_ERASE_TYPES(inst),		\
 		 .default_cmd_info = DEFAULT_CMD_INFO(inst),			\
 		 .default_switch_info = DEFAULT_SWITCH_INFO(inst),))		\
+		.requires_ulbpr_exist = DT_INST_PROP(inst, requires_ulbpr),	\
+		.default_erase_types = DEFAULT_ERASE_TYPES(inst),		\
+		.default_cmd_info = DEFAULT_CMD_INFO(inst),			\
+		.default_switch_info = DEFAULT_SWITCH_INFO(inst),		\
 		.read_freq = DT_INST_PROP_OR(inst, read_frequency,		\
 			FLASH_MSPI_MAX_FREQ(inst)),				\
 		.read_io_mode = DT_INST_ENUM_IDX_OR(inst, read_io_mode,		\
