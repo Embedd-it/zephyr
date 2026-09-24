@@ -7,6 +7,7 @@
 /dts-v1/;
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <microchip/pic32c/pic32cz_ca70_mc70/pic32cz_ca70/pic32cz2051ca70144.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 #include "pic32cz_ca70_cult-pinctrl.dtsi"
 
 / {
@@ -22,6 +23,8 @@
 
 	aliases {
 		led0 = &led0;
+		sw0 = &button0;
+		sw1 = &button1;
 	};
 
 	leds {
@@ -30,6 +33,22 @@
 		led0: led_0 {
 			gpios = <&piod 29 GPIO_ACTIVE_LOW>;
 			label = "User LED 1";
+		};
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+
+		button0: button_0 {
+			gpios = <&pioa 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "SW0";
+			zephyr,code = <INPUT_KEY_0>;
+		};
+
+		button1: button_1 {
+			gpios = <&pioa 9 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "SW1";
+			zephyr,code = <INPUT_KEY_1>;
 		};
 	};
 };
