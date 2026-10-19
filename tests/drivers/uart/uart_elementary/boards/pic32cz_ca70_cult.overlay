@@ -1,0 +1,19 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Loopback wiring (arduino header):
+ *   PD18 <-> PD19
+ */
+
+dut: &uart4 {
+	current-speed = <115200>;
+
+	pinctrl-0 = <&uart4_default>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};

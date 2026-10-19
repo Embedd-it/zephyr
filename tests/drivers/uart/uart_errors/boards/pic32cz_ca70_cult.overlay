@@ -1,0 +1,28 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Microchip Technology Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Loopback wiring:
+ *   PD30 (UART3 TX, EXT2 PIN4) -> PD25 (UART2 RX, EXT1 PIN15)
+ */
+
+dut: &uart2 {
+	current-speed = <115200>;
+
+	pinctrl-0 = <&uart2_default>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
+
+dut_aux: &uart3 {
+	current-speed = <115200>;
+
+	pinctrl-0 = <&uart3_default>;
+	pinctrl-names = "default";
+
+	status = "okay";
+};
