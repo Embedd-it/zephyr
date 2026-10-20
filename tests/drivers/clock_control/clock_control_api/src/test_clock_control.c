@@ -21,6 +21,8 @@ LOG_MODULE_REGISTER(test);
 	DT_HAS_COMPAT_STATUS_OKAY(microchip_pic32cz_ca_clock) || \
 	DT_HAS_COMPAT_STATUS_OKAY(microchip_pic32cm_sg_gc_clock)
 #include "mchp_device_subsys.h"
+#elif DT_HAS_COMPAT_STATUS_OKAY(microchip_pic32cz_ca70_mc70_pmc)
+#include "mchp_pic32cz_ca70_mc70_device_subsys.h"
 #else
 #error "Unsupported board"
 #endif
